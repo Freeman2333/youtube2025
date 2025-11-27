@@ -10,11 +10,11 @@ import {
   SidebarMenuItem,
   SidebarMenuButton,
   SidebarSeparator,
-  useSidebar,
 } from "@/components/ui/sidebar";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { useAuth, useClerk } from "@clerk/nextjs";
 
 type SidebarItem = {
   label: string;
@@ -35,14 +35,15 @@ const mainItems: SidebarItem[] = [
 ];
 
 const youItems: SidebarItem[] = [
-  { label: "History", href: "/history", icon: <Clock /> },
-  { label: "Liked Videos", href: "/liked", icon: <Heart /> },
-  { label: "All Playlists", href: "/playlists", icon: <List /> },
+  { label: "History", href: "/history", icon: <Clock />, auth: true },
+  { label: "Liked Videos", href: "/liked", icon: <Heart />, auth: true },
+  { label: "All Playlists", href: "/playlists", icon: <List />, auth: true },
 ];
 
 export const HomeSidebar = () => {
-  const { state } = useSidebar();
   const pathname = usePathname();
+  const { isSignedIn } = useAuth();
+  const clerk = useClerk();
 
   return (
     <Sidebar collapsible="icon" className="border-none">
@@ -51,22 +52,21 @@ export const HomeSidebar = () => {
         <SidebarGroup>
           <SidebarMenu>
             {mainItems.map((item) => {
-              const isActive = pathname === item.href;
               return (
                 <SidebarMenuItem key={item.label}>
-                  <SidebarMenuButton asChild>
-                    <Link
-                      href={item.href}
-                      className={cn(
-                        "flex items-center gap-2",
-                        isActive &&
-                          "font-semibold bg-gray-100 rounded-md px-2 py-1"
-                      )}
-                    >
+                  <SidebarMenuButton
+                    asChild
+                    isActive={pathname === item.href}
+                    onClick={(e) => {
+                      if (!isSignedIn && item.auth) {
+                        e.preventDefault();
+                        return clerk.openSignIn();
+                      }
+                    }}
+                  >
+                    <Link href={item.href} className="flex items-center gap-2">
                       {item.icon}
-                      <span className={state === "collapsed" ? "hidden" : ""}>
-                        {item.label}
-                      </span>
+                      <span>{item.label}</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -83,12 +83,19 @@ export const HomeSidebar = () => {
           <SidebarMenu>
             {youItems.map((item) => (
               <SidebarMenuItem key={item.label}>
-                <SidebarMenuButton asChild>
+                <SidebarMenuButton
+                  asChild
+                  isActive={pathname === item.href}
+                  onClick={(e) => {
+                    if (!isSignedIn && item.auth) {
+                      e.preventDefault();
+                      return clerk.openSignIn();
+                    }
+                  }}
+                >
                   <Link href={item.href} className="flex items-center gap-2">
                     {item.icon}
-                    <span className={state === "collapsed" ? "hidden" : ""}>
-                      {item.label}
-                    </span>
+                    <span>{item.label}</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
