@@ -3,8 +3,8 @@ import { Suspense } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import { HomeClient } from "./client";
 
-export default async function Home() {
-  void trpc.hello.prefetch({ text: "from Home Page" });
+const HomePage = async () => {
+  void trpc.categories.getMany.prefetch();
 
   return (
     <HydrateClient>
@@ -15,4 +15,6 @@ export default async function Home() {
       </ErrorBoundary>
     </HydrateClient>
   );
-}
+};
+
+export default HomePage;
