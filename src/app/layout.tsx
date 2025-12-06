@@ -4,6 +4,7 @@ import { ClerkProvider } from "@clerk/nextjs";
 
 import "./globals.css";
 import { TRPCProvider } from "@/trpc/client";
+import { ToasterProvider } from "@/components/providers/toaster-provider";
 
 export const metadata: Metadata = {
   title: "Youtube",
@@ -22,7 +23,10 @@ export default function RootLayout({
     <ClerkProvider>
       <html lang="en">
         <body className={inter.className}>
-          <TRPCProvider>{children}</TRPCProvider>
+          <TRPCProvider>
+            <ToasterProvider />
+            {children}
+          </TRPCProvider>
         </body>
       </html>
     </ClerkProvider>
