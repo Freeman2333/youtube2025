@@ -1,5 +1,6 @@
 import { relations } from "drizzle-orm";
 import {
+  pgEnum,
   pgTable,
   text,
   timestamp,
@@ -47,6 +48,21 @@ export const categoriesRelations = relations(categories, ({ many }) => ({
   videos: many(videos),
 }));
 
+export enum MuxStatus {
+  ASSET_CREATED = "asset_created",
+  CANCELLED = "cancelled",
+  ERRORED = "errored",
+  PREPARING = "preparing",
+  READY = "ready",
+  TIMED_OUT = "timed_out",
+  WAITING = "waiting",
+}
+
+export const muxStatusEnum = pgEnum(
+  "mux_status_enum",
+  Object.values(MuxStatus) as [string, ...string[]]
+);
+
 export const videos = pgTable("video", {
   id: uuid("id").primaryKey().defaultRandom(),
 
@@ -66,6 +82,12 @@ export const videos = pgTable("video", {
   updatedAt: timestamp("updatedAt")
     .notNull()
     .$onUpdate(() => new Date()),
+  muxStatus: muxStatusEnum("mux_status").notNull(),
+  muxAssetId: text("mux_asset_id").unique(),
+  muxUploadId: text("mux_upload_id").unique(),
+  muxPlaybackId: text("mux_playback_id").unique(),
+  muxTrackId: text("mux_track_id").unique(),
+  muxTrackStatus: text("mux_track_status"),
 });
 
 export const videosRelations = relations(videos, ({ one }) => ({
