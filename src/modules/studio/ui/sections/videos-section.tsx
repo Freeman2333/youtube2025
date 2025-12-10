@@ -16,6 +16,10 @@ import {
   TableCell,
   TableBody,
 } from "@/components/ui/table";
+import Thumbnail from "@/modules/videos/ui/components/video-thumbnail";
+import { snakeCaseToTitle } from "@/lib/utils";
+import { MuxStatus, VideoVisibility } from "@/db/schema";
+import { Globe2Icon, LockIcon } from "lucide-react";
 
 export const VideosSection = () => {
   return (
@@ -59,10 +63,38 @@ export const VideosSectionSuspense = () => {
               className="cursor-pointer hover:bg-muted/50 border-b"
               onClick={() => router.push(`/studio/videos/${video.id}`)}
             >
-              <TableCell className="font-medium pl-6">{video.title}</TableCell>
+              <TableCell className="font-medium pl-6">
+                <div className="flex items-center gap-4">
+                  <Thumbnail
+                    duration={video.duration}
+                    imageUrl={video.thumbnailUrl}
+                    previewUrl={video.previewUrl}
+                    title={video.title}
+                  />
+                  <div>
+                    <p className="line-clamp-2 max-w-[300px] text-sm">
+                      {video.title}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      {video.description || "No description"}
+                    </p>
+                  </div>
+                </div>
+              </TableCell>
 
-              <TableCell>{video.visibility}</TableCell>
-              <TableCell>{video.status}</TableCell>
+              <TableCell>
+                <div className="flex items-center">
+                  {video.visibility === VideoVisibility.PRIVATE ? (
+                    <LockIcon className="mr-2 size-4" />
+                  ) : (
+                    <Globe2Icon className="mr-2 size-4" />
+                  )}
+                  {snakeCaseToTitle(video.visibility)}
+                </div>
+              </TableCell>
+              <TableCell>
+                {snakeCaseToTitle(video.muxStatus || MuxStatus.ERRORED)}
+              </TableCell>
 
               <TableCell>
                 {video.createdAt

@@ -1,5 +1,6 @@
 import { relations } from "drizzle-orm";
 import {
+  integer,
   pgEnum,
   pgTable,
   text,
@@ -58,9 +59,19 @@ export enum MuxStatus {
   WAITING = "waiting",
 }
 
+export enum VideoVisibility {
+  PUBLIC = "public",
+  PRIVATE = "private",
+}
+
 export const muxStatusEnum = pgEnum(
   "mux_status_enum",
   Object.values(MuxStatus) as [string, ...string[]]
+);
+
+export const videoVisibilityEnum = pgEnum(
+  "video_visibility_enum",
+  Object.values(VideoVisibility) as [string, ...string[]]
 );
 
 export const videos = pgTable("video", {
@@ -68,6 +79,9 @@ export const videos = pgTable("video", {
 
   title: text("title").notNull(),
   description: text("description"),
+  thumbnailUrl: text("thumbnail_url"),
+  previewUrl: text("preview_url"),
+  duration: integer("duration"),
 
   categoryId: uuid("category_id").references(() => categories.id, {
     onDelete: "set null",
@@ -83,6 +97,9 @@ export const videos = pgTable("video", {
     .notNull()
     .$onUpdate(() => new Date()),
   muxStatus: muxStatusEnum("mux_status").notNull(),
+  visibility: videoVisibilityEnum("visibility")
+    .notNull()
+    .default(VideoVisibility.PUBLIC),
   muxAssetId: text("mux_asset_id").unique(),
   muxUploadId: text("mux_upload_id").unique(),
   muxPlaybackId: text("mux_playback_id").unique(),
