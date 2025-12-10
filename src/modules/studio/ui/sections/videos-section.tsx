@@ -20,10 +20,67 @@ import Thumbnail from "@/modules/videos/ui/components/video-thumbnail";
 import { snakeCaseToTitle } from "@/lib/utils";
 import { MuxStatus, VideoVisibility } from "@/db/schema";
 import { Globe2Icon, LockIcon } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
+
+const VideosSectionSkeleton = () => {
+  return (
+    <div>
+      <Table className="bg-white rounded-md border-collapse">
+        <TableHeader>
+          <TableRow className="border-y">
+            <TableHead className="w-[510px] pl-6">Video</TableHead>
+            <TableHead>Visibility</TableHead>
+            <TableHead>Status</TableHead>
+            <TableHead>Date</TableHead>
+            <TableHead className="text-right">Views</TableHead>
+            <TableHead className="text-right">Comments</TableHead>
+            <TableHead className="pr-6 text-right">Likes</TableHead>
+          </TableRow>
+        </TableHeader>
+
+        <TableBody>
+          {Array.from({ length: 5 }).map((_, idx) => (
+            <TableRow key={idx} className="border-b">
+              <TableCell className="pl-6">
+                <div className="flex items-center gap-4">
+                  <Skeleton className="w-36 aspect-video rounded-md" />
+                  <div className="flex flex-col gap-1">
+                    <Skeleton className="h-4 w-[280px]" />
+                    <Skeleton className="h-3 w-[200px]" />
+                  </div>
+                </div>
+              </TableCell>
+
+              <TableCell>
+                <Skeleton className="h-4 w-16" />
+              </TableCell>
+              <TableCell>
+                <Skeleton className="h-4 w-20" />
+              </TableCell>
+              <TableCell>
+                <Skeleton className="h-4 w-24" />
+              </TableCell>
+
+              <TableCell className="text-right">
+                <Skeleton className="h-4 w-10 ml-auto" />
+              </TableCell>
+              <TableCell className="text-right">
+                <Skeleton className="h-4 w-10 ml-auto" />
+              </TableCell>
+              <TableCell className="pr-6 text-right">
+                <Skeleton className="h-4 w-10 ml-auto" />
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </div>
+  );
+};
 
 export const VideosSection = () => {
   return (
-    <Suspense fallback={<p>Loading...</p>}>
+    <Suspense fallback={<VideosSectionSkeleton />}>
       <ErrorBoundary fallback={<p>Error...</p>}>
         <VideosSectionSuspense />
       </ErrorBoundary>
