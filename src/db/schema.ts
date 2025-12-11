@@ -8,6 +8,11 @@ import {
   uniqueIndex,
   uuid,
 } from "drizzle-orm/pg-core";
+import {
+  createInsertSchema,
+  createSelectSchema,
+  createUpdateSchema,
+} from "drizzle-zod";
 
 export const users = pgTable(
   "user",
@@ -105,6 +110,14 @@ export const videos = pgTable("video", {
   muxPlaybackId: text("mux_playback_id").unique(),
   muxTrackId: text("mux_track_id").unique(),
   muxTrackStatus: text("mux_track_status"),
+});
+
+export const VideoInsertSchema = createInsertSchema(videos);
+export const VideoSelectSchema = createSelectSchema(videos);
+export const VideoUpdateSchema = createUpdateSchema(videos);
+
+export const VideoInsertSchemaStrict = VideoInsertSchema.extend({
+  title: VideoInsertSchema.shape.title.nonempty("Title is required"),
 });
 
 export const videosRelations = relations(videos, ({ one }) => ({
