@@ -1,7 +1,7 @@
 "use client";
 
 import { trpc } from "@/trpc/client";
-import { Suspense } from "react";
+import { Suspense, useState } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
@@ -32,74 +32,22 @@ import {
   SelectItem,
 } from "@/components/ui/select";
 
-import {
-  Table,
-  TableHead,
-  TableHeader,
-  TableRow,
-  TableCell,
-  TableBody,
-} from "@/components/ui/table";
-import { Skeleton } from "@/components/ui/skeleton";
 import z from "zod";
 import { useForm } from "react-hook-form";
-import { VideoInsertSchema, VideoInsertSchemaStrict } from "@/db/schema";
+import {
+  MuxStatus,
+  VideoInsertSchema,
+  VideoInsertSchemaStrict,
+  VideoVisibility,
+} from "@/db/schema";
 import toast from "react-hot-toast";
+import CopyButton from "@/components/copy-button";
+import { cn, snakeCaseToTitle } from "@/lib/utils";
+import { VideoPlayer } from "@/modules/videos/ui/components/video-player";
+import { useRouter } from "next/navigation";
 
 const VideosSectionSkeleton = () => {
-  return (
-    <div>
-      <Table className="bg-white rounded-md border-collapse">
-        <TableHeader>
-          <TableRow className="border-y">
-            <TableHead className="w-[510px] pl-6">Video</TableHead>
-            <TableHead>Visibility</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead>Date</TableHead>
-            <TableHead className="text-right">Views</TableHead>
-            <TableHead className="text-right">Comments</TableHead>
-            <TableHead className="pr-6 text-right">Likes</TableHead>
-          </TableRow>
-        </TableHeader>
-
-        <TableBody>
-          {Array.from({ length: 5 }).map((_, idx) => (
-            <TableRow key={idx} className="border-b">
-              <TableCell className="pl-6">
-                <div className="flex items-center gap-4">
-                  <Skeleton className="w-36 aspect-video rounded-md" />
-                  <div className="flex flex-col gap-1">
-                    <Skeleton className="h-4 w-[280px]" />
-                    <Skeleton className="h-3 w-[200px]" />
-                  </div>
-                </div>
-              </TableCell>
-
-              <TableCell>
-                <Skeleton className="h-4 w-16" />
-              </TableCell>
-              <TableCell>
-                <Skeleton className="h-4 w-20" />
-              </TableCell>
-              <TableCell>
-                <Skeleton className="h-4 w-24" />
-              </TableCell>
-
-              <TableCell className="text-right">
-                <Skeleton className="h-4 w-10 ml-auto" />
-              </TableCell>
-              <TableCell className="text-right">
-                <Skeleton className="h-4 w-10 ml-auto" />
-              </TableCell>
-              <TableCell className="pr-6 text-right">
-                <Skeleton className="h-4 w-10 ml-auto" />
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </div>
-  );
+  return <div>loading...</div>;
 };
 
 export const FormSection = ({ videoId }: { videoId: string }) => {
@@ -114,6 +62,9 @@ export const FormSection = ({ videoId }: { videoId: string }) => {
 
 export const FormSectionSuspense = ({ videoId }: { videoId: string }) => {
   const utils = trpc.useUtils();
+  const router = useRouter();
+
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   const [video] = trpc.studio.getOne.useSuspenseQuery({ id: videoId });
   const [categories] = trpc.categories.getMany.useSuspenseQuery();
@@ -122,9 +73,22 @@ export const FormSectionSuspense = ({ videoId }: { videoId: string }) => {
     onSuccess: () => {
       toast.success("Video updated!");
       utils.studio.getMany.invalidate();
+      utils.studio.getOne.invalidate({ id: videoId });
     },
     onError: (error) => {
       toast.error(error.message || "Failed to create video!");
+    },
+  });
+
+  const removeVideo = trpc.videos.remove.useMutation({
+    onSuccess: () => {
+      toast.success("Video deleted!");
+      utils.studio.getMany.invalidate();
+      utils.studio.getOne.invalidate({ id: videoId });
+      router.push("/studio");
+    },
+    onError: (error) => {
+      toast.error(error.message || "Failed to delete video!");
     },
   });
 
@@ -132,6 +96,22 @@ export const FormSectionSuspense = ({ videoId }: { videoId: string }) => {
     resolver: zodResolver(VideoInsertSchemaStrict),
     defaultValues: video,
   });
+
+  const fullUrl = `${process.env.NEXT_PUBLIC_APP_BASE_URL}/studio/videos/${videoId}`;
+
+  const onRefresh = async () => {
+    try {
+      setIsRefreshing(true);
+
+      await utils.studio.getOne.invalidate({ id: videoId });
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Failed to copy video url!"
+      );
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
 
   return (
     <div>
@@ -156,10 +136,12 @@ export const FormSectionSuspense = ({ videoId }: { videoId: string }) => {
           <Button
             variant="secondary"
             size="icon"
-            disabled={update.isPending}
-            isLoading={update.isPending}
+            disabled={update.isPending || isRefreshing}
+            onClick={onRefresh}
           >
-            <RefreshCw className="h-4 w-4" />
+            <RefreshCw
+              className={cn("size-4", isRefreshing && "animate-spin")}
+            />
           </Button>
 
           <DropdownMenu>
@@ -173,7 +155,10 @@ export const FormSectionSuspense = ({ videoId }: { videoId: string }) => {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem className="text-destructive">
+              <DropdownMenuItem
+                className="text-destructive"
+                onClick={() => removeVideo.mutate({ id: videoId })}
+              >
                 <Trash className="h-4 w-4 mr-2" />
                 Delete
               </DropdownMenuItem>
@@ -254,7 +239,78 @@ export const FormSectionSuspense = ({ videoId }: { videoId: string }) => {
             />
           </div>
 
-          <div className="lg:col-span-2">Right content</div>
+          <div className="lg:col-span-2 flex flex-col gap-6">
+            <div className="bg-gray-100 rounded-lg flex flex-col gap-4">
+              <div className="relative aspect-video overflow-hidden rounded-t-lg">
+                <VideoPlayer
+                  playbackId={video.muxPlaybackId}
+                  duration={video.duration}
+                  thumbnailUrl={video.thumbnailUrl}
+                  previewUrl={video.previewUrl}
+                  title={video.title}
+                />
+              </div>
+              <div className="p-4 flex flex-col gap-4">
+                <div className="flex flex-col gap-1">
+                  <span className="text-xs text-muted-foreground">
+                    Video Link
+                  </span>
+
+                  <div className="flex items-center gap-2">
+                    <a href="#" className="text-sm text-blue-600 truncate">
+                      {fullUrl}
+                    </a>
+                    <CopyButton textToCopy={fullUrl} />
+                  </div>
+                </div>
+
+                <div className="flex flex-col">
+                  <span className="text-xs text-muted-foreground">
+                    Video status
+                  </span>
+                  <span className="text-sm">
+                    {snakeCaseToTitle(video.muxStatus || MuxStatus.PREPARING)}
+                  </span>
+                </div>
+
+                <div className="flex flex-col">
+                  <span className="text-xs text-muted-foreground">
+                    Subtitles status
+                  </span>
+                  <span className="text-sm">
+                    {snakeCaseToTitle(video.muxTrackStatus || "no_subtitles")}
+                  </span>
+                </div>
+              </div>
+            </div>
+            <FormField
+              control={form.control}
+              name="visibility"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Category</FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value || ""}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select visibility" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {Object.entries(VideoVisibility).map(([key, value]) => (
+                        <SelectItem key={value} value={value}>
+                          {snakeCaseToTitle(key) || key}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
         </form>
       </Form>
     </div>

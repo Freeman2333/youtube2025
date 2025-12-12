@@ -24,6 +24,7 @@ export const StudioUploader = ({
         id={MUX_UPLOADER_ID}
         endpoint={endpoint}
         className="group/uploader hidden"
+        onSuccess={onSuccess}
       />
       <MuxUploaderDrop muxUploader={MUX_UPLOADER_ID} className="group/drop">
         <div slot="heading" className="flex flex-col items-center gap-6">

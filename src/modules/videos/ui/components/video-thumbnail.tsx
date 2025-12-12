@@ -1,6 +1,6 @@
 "use client";
 
-import { formatDuration } from "@/lib/utils";
+import { cn, formatDuration } from "@/lib/utils";
 import Image from "next/image";
 import { useState } from "react";
 
@@ -9,6 +9,7 @@ type ThumbnailProps = {
   imageUrl?: string | null;
   previewUrl?: string | null;
   title?: string;
+  className?: string;
 };
 
 export default function Thumbnail({
@@ -16,6 +17,7 @@ export default function Thumbnail({
   imageUrl,
   previewUrl,
   title = "",
+  className,
 }: ThumbnailProps) {
   const [src, setSrc] = useState(imageUrl || "/placeholder.svg");
 
@@ -23,7 +25,10 @@ export default function Thumbnail({
     <div
       onMouseEnter={() => previewUrl && setSrc(previewUrl)}
       onMouseLeave={() => imageUrl && setSrc(imageUrl)}
-      className="relative overflow-hidden rounded-md aspect-video w-36"
+      className={cn(
+        "relative overflow-hidden rounded-md aspect-video w-36",
+        className
+      )}
     >
       <Image
         src={src}
