@@ -2,6 +2,7 @@
 
 import { trpc } from "@/trpc/client";
 import { Suspense, useState } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
 import { ErrorBoundary } from "react-error-boundary";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
@@ -49,7 +50,64 @@ import Image from "next/image";
 import { VideoThumbnailUploader } from "@/modules/videos/ui/components/video-thumbnail-uploader";
 
 const VideosSectionSkeleton = () => {
-  return <div>loading...</div>;
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-3">
+        <div className="space-y-2">
+          <Skeleton className="h-8 w-56" />
+          <Skeleton className="h-3 w-40" />
+        </div>
+
+        <div className="flex items-center gap-2">
+          <Skeleton className="h-10 w-24" />
+          <Skeleton className="h-10 w-10" />
+          <Skeleton className="h-10 w-10" />
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
+        <div className="lg:col-span-3 flex flex-col gap-6 mb-3">
+          <div className="space-y-2">
+            <Skeleton className="h-5 w-24" />
+            <Skeleton className="h-11 w-full" />
+          </div>
+
+          <div className="space-y-2">
+            <Skeleton className="h-5 w-28" />
+            <Skeleton className="h-40 w-full" />
+          </div>
+
+          <div>
+            <Skeleton className="h-3 w-20 mb-2" />
+            <Skeleton className="h-[84px] w-[153px]" />
+          </div>
+
+          <div className="space-y-2">
+            <Skeleton className="h-5 w-24" />
+            <Skeleton className="h-11 w-48" />
+          </div>
+        </div>
+
+        <div className="lg:col-span-2 flex flex-col gap-6">
+          <div className="bg-gray-100 rounded-lg flex flex-col gap-4">
+            <div className="relative aspect-video overflow-hidden rounded-t-lg">
+              <Skeleton className="w-full h-full rounded-t-lg" />
+            </div>
+            <div className="p-4 flex flex-col gap-4">
+              <Skeleton className="h-4 w-36" />
+              <Skeleton className="h-4 w-24" />
+              <Skeleton className="h-4 w-20" />
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <Skeleton className="h-5 w-24" />
+            <Skeleton className="h-11 w-full" />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export const FormSection = ({ videoId }: { videoId: string }) => {
