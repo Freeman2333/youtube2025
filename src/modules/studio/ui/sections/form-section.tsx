@@ -11,7 +11,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
-import { RefreshCw, MoreVertical, Trash } from "lucide-react";
+import { RefreshCw, MoreVertical, Trash, ImageIcon, Undo2 } from "lucide-react";
 
 import {
   Form,
@@ -45,6 +45,8 @@ import CopyButton from "@/components/copy-button";
 import { cn, snakeCaseToTitle } from "@/lib/utils";
 import { VideoPlayer } from "@/modules/videos/ui/components/video-player";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
+import { VideoThumbnailUploader } from "@/modules/videos/ui/components/video-thumbnail-uploader";
 
 const VideosSectionSkeleton = () => {
   return <div>loading...</div>;
@@ -65,6 +67,7 @@ export const FormSectionSuspense = ({ videoId }: { videoId: string }) => {
   const router = useRouter();
 
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [isThumbnailModalOpen, setIsThumbnailModalOpen] = useState(false);
 
   const [video] = trpc.studio.getOne.useSuspenseQuery({ id: videoId });
   const [categories] = trpc.categories.getMany.useSuspenseQuery();
@@ -84,11 +87,23 @@ export const FormSectionSuspense = ({ videoId }: { videoId: string }) => {
     onSuccess: () => {
       toast.success("Video deleted!");
       utils.studio.getMany.invalidate();
-      utils.studio.getOne.invalidate({ id: videoId });
+
       router.push("/studio");
     },
     onError: (error) => {
       toast.error(error.message || "Failed to delete video!");
+    },
+  });
+
+  const restoreThumbnail = trpc.videos.restoreThumbnail.useMutation({
+    onError: (error) => {
+      toast.error(error.message || "Failed to restore video thumbnail!");
+    },
+    onSuccess: () => {
+      utils.studio.getMany.invalidate();
+      utils.studio.getOne.invalidate({ id: videoId });
+
+      toast.success("Thumbnail restored!");
     },
   });
 
@@ -208,7 +223,56 @@ export const FormSectionSuspense = ({ videoId }: { videoId: string }) => {
               )}
             />
 
-            {/* Thumbnail */}
+            <div>
+              <p className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 mb-3">
+                Thumbnail
+              </p>
+              <div className="group relative h-[84px] w-[153px] border border-dashed bg-neutral-400 p-0.5">
+                <Image
+                  src={video.thumbnailUrl || "/placeholder.svg"}
+                  alt="Thumbnail"
+                  fill
+                  className="object-cover"
+                />
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant="secondary"
+                      size="icon"
+                      className="absolute right-1 top-1 size-7 rounded-full border border-white/50 bg-black/50 opacity-100 duration-300 hover:bg-black/50 group-hover:opacity-100 data-[state=open]:opacity-100 md:opacity-0 md:disabled:opacity-100"
+                    >
+                      <MoreVertical className="size-4 text-white" />
+                    </Button>
+                  </DropdownMenuTrigger>
+
+                  <DropdownMenuContent
+                    side="right"
+                    align="start"
+                    sideOffset={4}
+                    className="w-40"
+                  >
+                    <DropdownMenuItem
+                      onClick={() => setIsThumbnailModalOpen(true)}
+                    >
+                      <ImageIcon className="h-4 w-4 mr-2" />
+                      Change
+                    </DropdownMenuItem>
+
+                    <DropdownMenuItem
+                      onClick={() => restoreThumbnail.mutate({ id: videoId })}
+                    >
+                      <Undo2 className="h-4 w-4 mr-2" />
+                      Restore
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+            </div>
+            <VideoThumbnailUploader
+              open={isThumbnailModalOpen}
+              onOpenChange={setIsThumbnailModalOpen}
+              videoId={videoId}
+            />
 
             <FormField
               control={form.control}
@@ -246,6 +310,7 @@ export const FormSectionSuspense = ({ videoId }: { videoId: string }) => {
                   playbackId={video.muxPlaybackId}
                   duration={video.duration}
                   thumbnailUrl={video.thumbnailUrl}
+                  key={video.thumbnailUrl}
                   previewUrl={video.previewUrl}
                   title={video.title}
                 />

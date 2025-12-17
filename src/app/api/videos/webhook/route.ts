@@ -1,8 +1,10 @@
+import { UTApi } from "uploadthing/server";
 import { db } from "@/db";
 import { MuxStatus, videos } from "@/db/schema";
 import { mux } from "@/lib/mux";
 import { eq } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
+import { ensureNoExistingUploadthingFiles } from "@/utils/uploadthing-server";
 
 const MUX_SIGNING_SECRET = process.env.MUX_SIGNING_SECRET!;
 
@@ -56,10 +58,40 @@ export async function POST(req: NextRequest) {
         return new NextResponse("No playback id found!", { status: 404 });
       }
 
+      const muxPreviewUrl = `${process.env.NEXT_PUBLIC_MUX_IMAGE_BASE_URL}/${playbackId}/animated.gif`;
+      const muxThumbnailUrl = `${process.env.NEXT_PUBLIC_MUX_IMAGE_BASE_URL}/${playbackId}/thumbnail.jpg`;
+
       const duration = data.duration ? Math.round(data.duration * 1000) : 0;
 
-      const previewUrl = `${process.env.NEXT_PUBLIC_MUX_IMAGE_BASE_URL}/${playbackId}/animated.gif`;
-      const thumbnailUrl = `${process.env.NEXT_PUBLIC_MUX_IMAGE_BASE_URL}/${playbackId}/thumbnail.jpg`;
+      const [videoRow] = await db
+        .select({
+          thumbnailKey: videos.thumbnailKey,
+          previewKey: videos.previewKey,
+          id: videos.id,
+        })
+        .from(videos)
+        .where(eq(videos.muxUploadId, data.upload_id));
+
+      if (!videoRow) {
+        return new NextResponse("Video not found!", { status: 404 });
+      }
+
+      await ensureNoExistingUploadthingFiles(videoRow);
+
+      const utapi = new UTApi();
+
+      const [uploadedPreview, uploadedThumbnail] =
+        await utapi.uploadFilesFromUrl([muxPreviewUrl, muxThumbnailUrl]);
+
+      if (!uploadedPreview.data || !uploadedThumbnail.data) {
+        return new NextResponse("Failed to upload preview or thumbnail!", {
+          status: 500,
+        });
+      }
+
+      const { key: thumbnailKey, ufsUrl: thumbnailUrl } =
+        uploadedThumbnail.data;
+      const { key: previewKey, ufsUrl: previewUrl } = uploadedPreview.data;
 
       await db
         .update(videos)
@@ -70,7 +102,9 @@ export async function POST(req: NextRequest) {
           muxStatus: Object.values(MuxStatus).includes(data.status as MuxStatus)
             ? (data.status as MuxStatus)
             : MuxStatus.CANCELLED,
+          previewKey,
           previewUrl,
+          thumbnailKey,
           thumbnailUrl,
         })
         .where(eq(videos.muxUploadId, data.upload_id));

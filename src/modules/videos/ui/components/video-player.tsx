@@ -26,7 +26,7 @@ export const VideoPlayer = ({
         className="rounded-b-none w-full"
         duration={duration}
         title={title}
-        imageUrl={thumbnailUrl}
+        imageUrl={thumbnailUrl || "/placeholder.svg"}
         previewUrl={previewUrl}
       />
     );

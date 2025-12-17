@@ -4,20 +4,24 @@ const nextConfig: NextConfig = {
   images: {
     remotePatterns: [
       {
+        protocol: "https",
         hostname: "lh3.googleusercontent.com",
         pathname: "/a/**",
-        port: "",
-        protocol: "https",
       },
       {
+        protocol: "https",
         hostname: "img.clerk.com",
-        port: "",
-        protocol: "https",
+        pathname: "/**",
       },
       {
-        hostname: "image.mux.com",
-        port: "",
         protocol: "https",
+        hostname: "image.mux.com",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "*.ufs.sh",
+        pathname: "/**",
       },
     ],
   },

@@ -5,6 +5,8 @@ import { createTRPCRouter, protectedProcedure } from "@/trpc/init";
 import { TRPCError } from "@trpc/server";
 import { and, eq } from "drizzle-orm";
 import z from "zod";
+import { UTApi } from "uploadthing/server";
+import { ensureNoExistingUploadthingFiles } from "@/utils/uploadthing-server";
 
 export const videosRouter = createTRPCRouter({
   create: protectedProcedure.mutation(async ({ ctx }) => {
@@ -99,6 +101,53 @@ export const videosRouter = createTRPCRouter({
         });
       }
 
+      await ensureNoExistingUploadthingFiles(video);
+
       return video;
+    }),
+  restoreThumbnail: protectedProcedure
+    .input(z.object({ id: z.uuid() }))
+    .mutation(async ({ ctx, input }) => {
+      const { id: userId } = ctx.user;
+      const { id } = input;
+
+      const utapi = new UTApi();
+
+      const [existingVideo] = await db
+        .select()
+        .from(videos)
+        .where(and(eq(videos.id, id), eq(videos.userId, userId)));
+
+      if (!existingVideo)
+        throw new TRPCError({ code: "NOT_FOUND", message: "Video not found!" });
+
+      if (!existingVideo.muxPlaybackId)
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Playback id not found!",
+        });
+
+      await ensureNoExistingUploadthingFiles(existingVideo);
+
+      const muxThumbnailUrl = `${process.env.NEXT_PUBLIC_MUX_IMAGE_BASE_URL}/${existingVideo.muxPlaybackId}/thumbnail.jpg`;
+      const uploadedThumbnail = await utapi.uploadFilesFromUrl(muxThumbnailUrl);
+
+      if (!uploadedThumbnail.data) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to upload thumbnail!",
+        });
+      }
+
+      const { key: thumbnailKey, ufsUrl: thumbnailUrl } =
+        uploadedThumbnail.data;
+
+      const [updatedVideo] = await db
+        .update(videos)
+        .set({ thumbnailKey, thumbnailUrl })
+        .where(and(eq(videos.id, id), eq(videos.userId, userId)))
+        .returning();
+
+      return updatedVideo;
     }),
 });
