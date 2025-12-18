@@ -26,13 +26,6 @@ export const StudioSidebar = () => {
 
   const isCollapsed = state === "collapsed";
 
-  const initials =
-    user?.firstName && user?.lastName
-      ? `${user.firstName[0]}${user.lastName[0]}`
-      : user?.username?.slice(0, 2)?.toUpperCase() ||
-        user?.emailAddresses?.[0]?.emailAddress?.slice(0, 2)?.toUpperCase() ||
-        "UU";
-
   return (
     <Sidebar collapsible="icon" className="border-r">
       <SidebarContent className="pt-20 bg-white">
@@ -47,7 +40,10 @@ export const StudioSidebar = () => {
             <Link href={`users/${user?.id}`}>
               <UserAvatar
                 src={user?.imageUrl}
-                initials={initials}
+                firstName={user?.firstName}
+                lastName={user?.lastName}
+                username={user?.username}
+                email={user?.emailAddresses?.[0]?.emailAddress}
                 size={isCollapsed ? "xs" : "lg"}
                 className="transition-all"
               />

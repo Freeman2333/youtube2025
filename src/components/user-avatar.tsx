@@ -24,15 +24,33 @@ export const avatarVariants = cva(
 
 export const UserAvatar = ({
   src,
-  initials,
+  firstName,
+  lastName,
+  username,
+  email,
   size,
   className,
 }: {
   src?: string;
-  initials?: string;
+  firstName?: string | null;
+  lastName?: string | null;
+  username?: string | null;
+  email?: string | null;
   size?: "default" | "sm" | "lg" | "xs" | "xl";
   className?: string;
 }) => {
+  let initials;
+
+  if (firstName && lastName) {
+    initials = `${firstName[0]}${lastName[0]}`.toUpperCase();
+  } else if (username) {
+    initials = username.slice(0, 2).toUpperCase();
+  } else if (email) {
+    initials = email.slice(0, 2).toUpperCase();
+  } else {
+    initials = "UU";
+  }
+
   return (
     <Avatar className={cn(avatarVariants({ size }), className)}>
       <AvatarImage src={src || ""} />

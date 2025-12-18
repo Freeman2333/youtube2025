@@ -48,6 +48,7 @@ import { VideoPlayer } from "@/modules/videos/ui/components/video-player";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { VideoThumbnailUploader } from "@/modules/videos/ui/components/video-thumbnail-uploader";
+import Link from "next/link";
 
 const VideosSectionSkeleton = () => {
   return (
@@ -170,7 +171,7 @@ export const FormSectionSuspense = ({ videoId }: { videoId: string }) => {
     defaultValues: video,
   });
 
-  const fullUrl = `${process.env.NEXT_PUBLIC_APP_BASE_URL}/studio/videos/${videoId}`;
+  const fullUrl = `${process.env.NEXT_PUBLIC_APP_BASE_URL}/videos/${videoId}`;
 
   const onRefresh = async () => {
     try {
@@ -380,9 +381,12 @@ export const FormSectionSuspense = ({ videoId }: { videoId: string }) => {
                   </span>
 
                   <div className="flex items-center gap-2">
-                    <a href="#" className="text-sm text-blue-600 truncate">
+                    <Link
+                      href={`/videos/${videoId}`}
+                      className="text-sm text-blue-600 truncate"
+                    >
                       {fullUrl}
-                    </a>
+                    </Link>
                     <CopyButton textToCopy={fullUrl} />
                   </div>
                 </div>

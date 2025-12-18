@@ -1,7 +1,11 @@
 import { db } from "@/db";
-import { MuxStatus, VideoInsertSchemaStrict, videos } from "@/db/schema";
+import { MuxStatus, VideoInsertSchemaStrict, videos, users } from "@/db/schema";
 import { mux } from "@/lib/mux";
-import { createTRPCRouter, protectedProcedure } from "@/trpc/init";
+import {
+  createTRPCRouter,
+  protectedProcedure,
+  baseProcedure,
+} from "@/trpc/init";
 import { TRPCError } from "@trpc/server";
 import { and, eq } from "drizzle-orm";
 import z from "zod";
@@ -149,5 +153,22 @@ export const videosRouter = createTRPCRouter({
         .returning();
 
       return updatedVideo;
+    }),
+  getOne: baseProcedure
+    .input(
+      z.object({
+        id: z.uuid(),
+      })
+    )
+    .query(async ({ input }) => {
+      const { id } = input;
+
+      const [videoWithUser] = await db
+        .select({ video: videos, user: users })
+        .from(videos)
+        .innerJoin(users, eq(users.id, videos.userId))
+        .where(eq(videos.id, id));
+
+      return videoWithUser || null;
     }),
 });
