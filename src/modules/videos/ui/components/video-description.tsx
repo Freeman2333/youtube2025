@@ -1,16 +1,34 @@
-import React, { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { ChevronDown, ChevronUp } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { VideoWithUser } from "../../types";
+import { useState, useMemo } from "react";
 import { format, formatDistanceToNow } from "date-fns";
+import { ChevronDown, ChevronUp } from "lucide-react";
+
+import { Button } from "@/components/ui/button";
+
+import { cn } from "@/lib/utils";
+import { VideoWithUser } from "@/modules/videos/types";
 
 interface VideoDescriptionProps {
   video: VideoWithUser["video"];
+  viewCount: VideoWithUser["viewCount"];
 }
 
-export const VideoDescription = ({ video }: VideoDescriptionProps) => {
+export const VideoDescription = ({
+  video,
+  viewCount,
+}: VideoDescriptionProps) => {
   const [expanded, setExpanded] = useState(false);
+
+  const compactViews = useMemo(() => {
+    return Intl.NumberFormat("en", {
+      notation: "compact",
+    }).format(viewCount);
+  }, [viewCount]);
+
+  const expandedViews = useMemo(() => {
+    return Intl.NumberFormat("en", {
+      notation: "standard",
+    }).format(viewCount);
+  }, [viewCount]);
 
   const handleExpandArea = () => {
     if (!expanded) {
@@ -27,7 +45,10 @@ export const VideoDescription = ({ video }: VideoDescriptionProps) => {
       onClick={!expanded ? handleExpandArea : undefined}
     >
       <div className="mb-2 flex gap-4 text-sm font-medium">
-        <span>123,456 views</span>
+        <span>
+          {expanded ? expandedViews : compactViews} view
+          {viewCount === 1 ? "" : "s"}
+        </span>
         <span>
           {expanded
             ? format(new Date(video?.createdAt), "d MMM yyyy")

@@ -8,9 +8,10 @@ import type { VideoWithUser } from "@/modules/videos/types";
 interface VideoTopRowProps {
   video: VideoWithUser["video"];
   user: VideoWithUser["user"];
+  viewCount: VideoWithUser["viewCount"];
 }
 
-export const VideoTopRow = ({ video, user }: VideoTopRowProps) => {
+export const VideoTopRow = ({ video, user, viewCount }: VideoTopRowProps) => {
   return (
     <div>
       <h2 className="text-lg font-semibold mb-2">{video.title}</h2>
@@ -28,7 +29,7 @@ export const VideoTopRow = ({ video, user }: VideoTopRowProps) => {
         </div>
       </div>
       <div className="mt-5">
-        <VideoDescription video={video} />
+        <VideoDescription video={video} viewCount={viewCount} />
       </div>
     </div>
   );

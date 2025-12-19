@@ -2,6 +2,7 @@
 
 import { Suspense } from "react";
 import { ErrorBoundary } from "react-error-boundary";
+import { useUser } from "@clerk/nextjs";
 
 import { Skeleton } from "@/components/ui/skeleton";
 import { VideoPlayer } from "@/modules/videos/ui/components/video-player";
@@ -46,10 +47,26 @@ interface VideosSectionProps {
 }
 
 export const VideoSectionSuspense = ({ videoId }: VideosSectionProps) => {
+  const { isSignedIn } = useUser();
+
+  const utils = trpc.useUtils();
   const [data] = trpc.videos.getOne.useSuspenseQuery({ id: videoId });
+
+  const createVideoView = trpc.videoViews.create.useMutation({
+    onSuccess: () => {
+      utils.videos.getOne.invalidate({ id: videoId });
+    },
+  });
 
   const video = data?.video;
   const user = data?.user;
+  const viewCount = data?.viewCount;
+
+  const handlePlay = () => {
+    if (isSignedIn) {
+      createVideoView.mutate({ videoId });
+    }
+  };
 
   return (
     <div className="grid grid-cols-1 gap-4">
@@ -61,6 +78,7 @@ export const VideoSectionSuspense = ({ videoId }: VideosSectionProps) => {
             thumbnailUrl={video.thumbnailUrl}
             previewUrl={video.previewUrl}
             title={video.title}
+            onPlay={handlePlay}
           />
         </div>
       </div>
@@ -68,7 +86,7 @@ export const VideoSectionSuspense = ({ videoId }: VideosSectionProps) => {
         <VideoBanner muxStatus={video.muxStatus as MuxStatus} />
       </div>
       <div>
-        <VideoTopRow video={video} user={user} />
+        <VideoTopRow video={video} user={user} viewCount={viewCount} />
       </div>
     </div>
   );

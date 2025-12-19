@@ -1,5 +1,11 @@
 import { db } from "@/db";
-import { MuxStatus, VideoInsertSchemaStrict, videos, users } from "@/db/schema";
+import {
+  MuxStatus,
+  VideoInsertSchemaStrict,
+  videos,
+  users,
+  videoViews,
+} from "@/db/schema";
 import { mux } from "@/lib/mux";
 import {
   createTRPCRouter,
@@ -164,7 +170,11 @@ export const videosRouter = createTRPCRouter({
       const { id } = input;
 
       const [videoWithUser] = await db
-        .select({ video: videos, user: users })
+        .select({
+          video: videos,
+          user: users,
+          viewCount: db.$count(videoViews, eq(videoViews.videoId, videos.id)),
+        })
         .from(videos)
         .innerJoin(users, eq(users.id, videos.userId))
         .where(eq(videos.id, id));
