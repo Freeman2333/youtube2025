@@ -1,4 +1,6 @@
 import { VideoSection } from "@/modules/videos/ui/sections/video-section";
+import { CommentsSection } from "../sections/comments-section";
+import { SuggestionsSection } from "../sections/suggestions-section";
 
 interface VideoViewProps {
   videoId: string;
@@ -10,14 +12,11 @@ export const VideoView = ({ videoId }: VideoViewProps) => {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         <div className="lg:col-span-8">
           <VideoSection videoId={videoId} />
+          <CommentsSection />
         </div>
 
         <div className="lg:col-span-4">
-          <div className="h-full rounded-lg border border-dashed border-muted p-4">
-            <p className="text-sm text-muted-foreground">
-              Related lists / playlists (coming soon)
-            </p>
-          </div>
+          <SuggestionsSection />
         </div>
       </div>
     </div>

@@ -34,7 +34,7 @@ export const VideoOwner = ({
           <span className="text-xs text-muted-foreground">{0} subscribers</span>
         </div>
       </Link>
-      <div className="pl-4 hidden md:flex">
+      <div className="pl-4 flex">
         {isVideoOwner ? (
           <Link
             href={`/studio/videos/${videoId}`}

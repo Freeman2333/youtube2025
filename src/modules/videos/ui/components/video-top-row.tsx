@@ -14,7 +14,7 @@ export const VideoTopRow = ({ video, user }: VideoTopRowProps) => {
   return (
     <div>
       <h2 className="text-lg font-semibold mb-2">{video.title}</h2>
-      <div className="flex justify-between items-center gap-4">
+      <div className="flex justify-between flex-wrap items-center gap-4">
         <VideoOwner
           name={user.name}
           userId={user.id}
