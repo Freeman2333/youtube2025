@@ -35,6 +35,7 @@ export const users = pgTable(
 export const usersRelations = relations(users, ({ many }) => ({
   videos: many(videos),
   videoViews: many(videoViews),
+  videoReactions: many(videoReactions),
 }));
 
 export const categories = pgTable(
@@ -134,6 +135,7 @@ export const videosRelations = relations(videos, ({ many, one }) => ({
     references: [users.id],
   }),
   views: many(videoViews),
+  reactions: many(videoReactions),
 }));
 
 export const videoViews = pgTable(
@@ -166,6 +168,51 @@ export const videoViewsRelations = relations(videoViews, ({ one }) => ({
   }),
   videos: one(videos, {
     fields: [videoViews.videoId],
+    references: [videos.id],
+  }),
+}));
+
+export enum ReactionType {
+  LIKE = "like",
+  DISLIKE = "dislike",
+}
+
+export const reactionTypeEnum = pgEnum(
+  "reaction_type_enum",
+  Object.values(ReactionType) as [string, ...string[]]
+);
+
+export const videoReactions = pgTable(
+  "video_reaction",
+  {
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    videoId: uuid("video_id")
+      .notNull()
+      .references(() => videos.id, { onDelete: "cascade" }),
+    type: reactionTypeEnum("type").notNull(),
+
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+    updatedAt: timestamp("updated_at")
+      .notNull()
+      .$onUpdate(() => new Date()),
+  },
+  (videoReaction) => [
+    primaryKey({
+      name: "video_reactions_pk",
+      columns: [videoReaction.userId, videoReaction.videoId],
+    }),
+  ]
+);
+
+export const videoReactionsRelations = relations(videoReactions, ({ one }) => ({
+  users: one(users, {
+    fields: [videoReactions.userId],
+    references: [users.id],
+  }),
+  videos: one(videos, {
+    fields: [videoReactions.videoId],
     references: [videos.id],
   }),
 }));
