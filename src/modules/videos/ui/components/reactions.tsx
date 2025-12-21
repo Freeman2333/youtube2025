@@ -3,6 +3,7 @@ import { useClerk } from "@clerk/nextjs";
 
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+
 import { trpc } from "@/trpc/client";
 import { cn } from "@/lib/utils";
 import { ReactionType } from "@/db/schema";
@@ -25,23 +26,80 @@ export const Reactions = ({
   const utils = trpc.useUtils();
 
   const likeMutation = trpc.videoReactions.like.useMutation({
-    onSuccess: () => {
-      utils.videos.getOne.invalidate({ id: videoId });
+    onMutate: async () => {
+      await utils.videos.getOne.cancel({ id: videoId });
+      const previous = utils.videos.getOne.getData({ id: videoId });
+      utils.videos.getOne.setData({ id: videoId }, (old) => {
+        if (!old) return old;
+
+        let likes = old.likesCount || 0;
+        let dislikes = old.dislikesCount || 0;
+        const viewerReaction = old.viewerReaction;
+
+        if (viewerReaction === ReactionType.LIKE) {
+          likes = Math.max(0, likes - 1);
+        } else if (viewerReaction === ReactionType.DISLIKE) {
+          dislikes = Math.max(0, dislikes - 1);
+          likes += 1;
+        } else {
+          likes += 1;
+        }
+
+        return {
+          ...old,
+          likesCount: likes,
+          dislikesCount: dislikes,
+          viewerReaction:
+            viewerReaction === ReactionType.LIKE ? null : ReactionType.LIKE,
+        };
+      });
+      return { previous };
     },
-    onError: (error) => {
+    onError: (error, _vars, context) => {
+      utils.videos.getOne.setData({ id: videoId }, context?.previous);
       if (error?.data?.code === "UNAUTHORIZED") {
         clerk.openSignIn();
       }
+    },
+    onSettled: () => {
+      utils.videos.getOne.invalidate({ id: videoId });
     },
   });
   const dislikeMutation = trpc.videoReactions.dislike.useMutation({
-    onSuccess: () => {
-      utils.videos.getOne.invalidate({ id: videoId });
+    onMutate: async () => {
+      await utils.videos.getOne.cancel({ id: videoId });
+      const previous = utils.videos.getOne.getData({ id: videoId });
+      utils.videos.getOne.setData({ id: videoId }, (old) => {
+        if (!old) return old;
+        let likes = old.likesCount ?? 0;
+        let dislikes = old.dislikesCount ?? 0;
+        const viewer = old.viewerReaction ?? null;
+        if (viewer === ReactionType.DISLIKE) {
+          dislikes = Math.max(0, dislikes - 1);
+        } else if (viewer === ReactionType.LIKE) {
+          likes = Math.max(0, likes - 1);
+          dislikes = dislikes + 1;
+        } else {
+          dislikes = dislikes + 1;
+        }
+        return {
+          ...old,
+          likesCount: likes,
+          dislikesCount: dislikes,
+          viewerReaction:
+            viewer === ReactionType.DISLIKE ? null : ReactionType.DISLIKE,
+        };
+      });
+      return { previous };
     },
-    onError: (error) => {
+    onError: (error, _vars, context) => {
+      utils.videos.getOne.setData({ id: videoId }, context?.previous);
       if (error?.data?.code === "UNAUTHORIZED") {
         clerk.openSignIn();
       }
+    },
+    onSettled: () => {
+      utils.videos.getOne.invalidate({ id: videoId });
     },
   });
 

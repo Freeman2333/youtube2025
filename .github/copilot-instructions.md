@@ -10,8 +10,11 @@
   6. Always use absolute imports (e.g., `@/path/to/file`) instead of relative imports (e.g., `../../file`).
 
 - Change Logging Requirements:
+
   1. Maintain a repository-wide `changelog.md` at the project root.
   2. Each time code is generated or files are edited, append a new entry following Semantic Versioning (MAJOR.MINOR.PATCH).
   3. Include the ISO date (YYYY-MM-DD), version, and a concise description of changes.
   4. Group entries under version headers and use short bullet points for modifications.
   5. Only include user-visible or repository-impacting changes; skip trivial whitespace-only edits.
+
+- Avoid using redundant fallback syntax like `context?.previous ?? undefined`. If the fallback value is the same as the original type (e.g., `undefined`), omit it.
