@@ -59,8 +59,6 @@ export const VideoSectionSuspense = ({ videoId }: VideosSectionProps) => {
   });
 
   const video = data?.video;
-  const user = data?.user;
-  const viewCount = data?.viewCount;
 
   const handlePlay = () => {
     if (isSignedIn) {
@@ -86,7 +84,7 @@ export const VideoSectionSuspense = ({ videoId }: VideosSectionProps) => {
         <VideoBanner muxStatus={video.muxStatus as MuxStatus} />
       </div>
       <div>
-        <VideoTopRow video={video} user={user} viewCount={viewCount} />
+        <VideoTopRow data={data} />
       </div>
     </div>
   );

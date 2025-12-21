@@ -1,17 +1,17 @@
-import React from "react";
-import { VideoOwner } from "./video-owner";
-import { Reactions } from "./reactions";
-import { VideoMenu } from "./video-menu";
-import { VideoDescription } from "./video-description";
 import type { VideoWithUser } from "@/modules/videos/types";
 
+import { VideoOwner } from "@/modules/videos/ui/components/video-owner";
+import { Reactions } from "@/modules/videos/ui/components/reactions";
+import { VideoMenu } from "@/modules/videos/ui/components/video-menu";
+import { VideoDescription } from "@/modules/videos/ui/components/video-description";
+
 interface VideoTopRowProps {
-  video: VideoWithUser["video"];
-  user: VideoWithUser["user"];
-  viewCount: VideoWithUser["viewCount"];
+  data: VideoWithUser;
 }
 
-export const VideoTopRow = ({ video, user, viewCount }: VideoTopRowProps) => {
+export const VideoTopRow = ({ data }: VideoTopRowProps) => {
+  const { video, user, viewCount, likesCount, dislikesCount } = data;
+
   return (
     <div>
       <h2 className="text-lg font-semibold mb-2">{video.title}</h2>
@@ -24,7 +24,12 @@ export const VideoTopRow = ({ video, user, viewCount }: VideoTopRowProps) => {
           videoId={video.id}
         />
         <div className="flex items-center gap-4">
-          <Reactions value="like" />
+          <Reactions
+            videoId={video.id}
+            likesCount={likesCount}
+            dislikesCount={dislikesCount}
+            viewerReaction={data.viewerReaction}
+          />
           <VideoMenu videoId={video.id} />
         </div>
       </div>
