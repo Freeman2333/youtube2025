@@ -10,7 +10,15 @@ interface VideoTopRowProps {
 }
 
 export const VideoTopRow = ({ data }: VideoTopRowProps) => {
-  const { video, user, viewCount, likesCount, dislikesCount } = data;
+  const {
+    video,
+    user,
+    viewCount,
+    likesCount,
+    dislikesCount,
+    subscriberCount,
+    isSubscribed,
+  } = data;
 
   return (
     <div>
@@ -22,6 +30,8 @@ export const VideoTopRow = ({ data }: VideoTopRowProps) => {
           userImage={user.imageUrl}
           userClerkId={user.clerkId}
           videoId={video.id}
+          isSubscribed={isSubscribed}
+          subscriberCount={subscriberCount}
         />
         <div className="flex items-center gap-4">
           <Reactions

@@ -7,6 +7,7 @@ import {
   videoViews,
   videoReactions,
   ReactionType,
+  subscriptions,
 } from "@/db/schema";
 import { mux } from "@/lib/mux";
 import {
@@ -198,8 +199,21 @@ export const videosRouter = createTRPCRouter({
           .limit(1)
       );
 
+      const subscriptionCte = db.$with("subscription_cte").as(
+        db
+          .select({
+            creatorId: subscriptions.creatorId,
+            subscriberCount: sql<number>`count(*) as subscriberCount`,
+            isSubscribed: sql<boolean>`bool_or(subscriptions.viewer_id = ${
+              currentUser?.id ?? sql`null`
+            }) as isSubscribed`,
+          })
+          .from(subscriptions)
+          .groupBy(subscriptions.creatorId)
+      );
+
       const [videoWithUser] = await db
-        .with(viewerReactionCte)
+        .with(viewerReactionCte, subscriptionCte)
         .select({
           video: videos,
           user: users,
@@ -221,10 +235,13 @@ export const videosRouter = createTRPCRouter({
           viewerReaction: sql<
             string | null
           >`coalesce(viewer_reaction.type, null)`,
+          subscriberCount: sql<number>`coalesce(subscription_cte.subscriberCount, 0)`,
+          isSubscribed: sql<boolean>`coalesce(subscription_cte.isSubscribed, false)`,
         })
         .from(videos)
         .innerJoin(users, eq(users.id, videos.userId))
         .leftJoin(viewerReactionCte, eq(viewerReactionCte.videoId, videos.id))
+        .leftJoin(subscriptionCte, eq(subscriptionCte.creatorId, users.id))
         .where(eq(videos.id, id));
 
       return videoWithUser || null;

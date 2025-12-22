@@ -6,6 +6,7 @@ import { buttonVariants } from "@/components/ui/button";
 import { SubscriptionButton } from "@/modules/subscriptions/ui/components/subscription-button";
 import { UserInfo } from "@/modules/users/ui/components/user-info";
 import { cn } from "@/lib/utils";
+import { useSubscription } from "@/modules/subscriptions/hooks/use-subscription";
 
 interface VideoOwnerProps {
   userId: string;
@@ -13,6 +14,8 @@ interface VideoOwnerProps {
   videoId: string;
   name: string;
   userImage?: string;
+  isSubscribed: boolean;
+  subscriberCount: number;
 }
 
 export const VideoOwner = ({
@@ -21,17 +24,28 @@ export const VideoOwner = ({
   videoId,
   name,
   userImage,
+  isSubscribed,
+  subscriberCount,
 }: VideoOwnerProps) => {
   const { userId: _userClerkId } = useAuth();
 
   const isVideoOwner = userClerkId === _userClerkId;
+
+  const { toggleSubscription, isPending } = useSubscription(videoId);
+
+  const handleSubscribe = () => {
+    toggleSubscription(userId, isSubscribed);
+  };
+
   return (
     <div className="flex items-start justify-between">
       <Link href={`/users/${userId}`} className="flex items-center gap-3">
         <UserAvatar src={userImage} username={name} size="default" />
         <div className="flex flex-col">
-          <UserInfo name={name} />
-          <span className="text-xs text-muted-foreground">{0} subscribers</span>
+          <UserInfo name={name} size="lg" />
+          <span className="text-xs text-muted-foreground">
+            {subscriberCount} subscriber{+subscriberCount !== 1 ? "s" : ""}
+          </span>
         </div>
       </Link>
       <div className="pl-4 flex">
@@ -47,9 +61,9 @@ export const VideoOwner = ({
           </Link>
         ) : (
           <SubscriptionButton
-            isSubscribed={false}
-            onClick={() => console.log("Subscribe")}
-            disabled={false}
+            isSubscribed={isSubscribed}
+            onClick={handleSubscribe}
+            disabled={isPending}
           >
             Subscribe
           </SubscriptionButton>
