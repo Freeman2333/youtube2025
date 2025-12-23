@@ -4,6 +4,24 @@ All notable changes to this project will be documented in this file.
 
 The format is based on Semantic Versioning (MAJOR.MINOR.PATCH).
 
+## [0.1.9] - 2025-12-23
+
+### Changed
+
+- Refactored VideosSectionSkeleton to use VideoPlayerSkeleton, VideoTopRowSkeleton, and a custom VideoBanner skeleton, matching the exact component order and layout of the VideoSectionSuspense component.
+
+## [0.1.8] - 2025-12-23
+
+### Added
+
+- Added VideoTopRowSkeleton component for loading states, matching the exact layout and sizes of the VideoTopRow component including title, video owner info, reactions, menu, and description sections.
+
+## [0.1.7] - 2025-12-23
+
+### Added
+
+- Added VideoPlayerSkeleton component for loading states, matching the exact dimensions and styling of the VideoPlayer component.
+
 ## [0.1.6] - 2025-12-22
 
 ### Added

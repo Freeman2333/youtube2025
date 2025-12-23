@@ -4,26 +4,23 @@ import { Suspense } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import { useUser } from "@clerk/nextjs";
 
-import { Skeleton } from "@/components/ui/skeleton";
-import { VideoPlayer } from "@/modules/videos/ui/components/video-player";
+import {
+  VideoPlayer,
+  VideoPlayerSkeleton,
+} from "@/modules/videos/ui/components/video-player";
 import { VideoBanner } from "@/modules/videos/ui/components/video-banner";
-import { VideoTopRow } from "@/modules/videos/ui/components/video-top-row";
+import {
+  VideoTopRow,
+  VideoTopRowSkeleton,
+} from "@/modules/videos/ui/components/video-top-row";
 import { trpc } from "@/trpc/client";
 import type { MuxStatus } from "@/db/schema";
 
 const VideosSectionSkeleton = () => {
   return (
-    <div className="grid grid-cols-1 gap-4">
-      {Array.from({ length: 6 }).map((_, idx) => (
-        <div key={idx} className="flex gap-4 items-start">
-          <Skeleton className="w-56 aspect-video rounded-md" />
-          <div className="flex-1 space-y-2">
-            <Skeleton className="h-4 w-3/4" />
-            <Skeleton className="h-3 w-1/2" />
-            <Skeleton className="h-3 w-1/4" />
-          </div>
-        </div>
-      ))}
+    <div className="grid grid-cols-1 gap-6">
+      <VideoPlayerSkeleton />
+      <VideoTopRowSkeleton />
     </div>
   );
 };

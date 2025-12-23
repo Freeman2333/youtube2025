@@ -1,5 +1,6 @@
 import MuxPlayer from "@mux/mux-player-react";
 import Thumbnail from "./video-thumbnail";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface VideoPlayerProps {
   autoPlay?: boolean;
@@ -43,5 +44,13 @@ export const VideoPlayer = ({
       accentColor="#ff2056"
       onPlay={onPlay}
     />
+  );
+};
+
+export const VideoPlayerSkeleton = () => {
+  return (
+    <div className="relative aspect-video w-full overflow-hidden rounded-lg bg-black">
+      <Skeleton className="absolute inset-0 w-full h-full" />
+    </div>
   );
 };
