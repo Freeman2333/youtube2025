@@ -2,6 +2,7 @@
 
 import { trpc } from "@/trpc/client";
 import { CommentForm } from "@/modules/comments/ui/components/comment-form";
+import { CommentItem } from "@/modules/comments/ui/components/comment-item";
 import { Suspense } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 
@@ -41,13 +42,9 @@ export const CommentsSectionSuspense = ({
 
       <CommentForm videoId={videoId} />
 
-      <div className="space-y-4">
+      <div>
         {data.map((comment) => (
-          <div key={comment.id} className="border p-4 rounded">
-            <pre className="text-sm whitespace-pre-wrap">
-              {JSON.stringify(comment, null, 2)}
-            </pre>
-          </div>
+          <CommentItem key={comment.id} comment={comment} />
         ))}
       </div>
     </div>
