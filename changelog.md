@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 
 The format is based on Semantic Versioning (MAJOR.MINOR.PATCH).
 
+## [0.1.10] - 2025-12-23
+
+### Added
+
+- Added comments table to database schema with basic fields (id, content, userId, videoId, createdAt, updatedAt)
+- Created comments module with TRPC procedures for create and getMany operations
+- Integrated comments router into the main TRPC app router
+
 ## [0.1.9] - 2025-12-23
 
 ### Changed
