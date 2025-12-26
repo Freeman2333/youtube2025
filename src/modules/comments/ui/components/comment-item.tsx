@@ -15,6 +15,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { trpc } from "@/trpc/client";
+import { CommentReactions } from "@/modules/comment-reactions/ui/components/comment-reactions";
 import type { Comment } from "@/modules/comments/types";
 
 interface CommentItemProps {
@@ -64,6 +65,14 @@ export const CommentItem = ({ comment, videoId }: CommentItemProps) => {
           </span>
         </div>
         <p className="text-sm text-foreground">{comment.content}</p>
+
+        <CommentReactions
+          commentId={comment.id}
+          videoId={videoId}
+          likesCount={comment.likesCount}
+          dislikesCount={comment.dislikesCount}
+          viewerReaction={comment.viewerReaction}
+        />
       </div>
 
       <div className="flex-shrink-0">

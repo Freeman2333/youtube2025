@@ -43,6 +43,7 @@ export const usersRelations = relations(users, ({ many }) => ({
     relationName: "creator",
   }),
   comments: many(comments),
+  commentReactions: many(commentReactions),
 }));
 
 export const categories = pgTable(
@@ -248,10 +249,12 @@ export const subscriptionsRelations = relations(subscriptions, ({ one }) => ({
   viewer: one(users, {
     fields: [subscriptions.viewerId],
     references: [users.id],
+    relationName: "viewer",
   }),
   creator: one(users, {
     fields: [subscriptions.creatorId],
     references: [users.id],
+    relationName: "creator",
   }),
 }));
 
@@ -274,7 +277,7 @@ export const CommentInsertSchema = createInsertSchema(comments);
 export const CommentSelectSchema = createSelectSchema(comments);
 export const CommentUpdateSchema = createUpdateSchema(comments);
 
-export const commentsRelations = relations(comments, ({ one }) => ({
+export const commentsRelations = relations(comments, ({ one, many }) => ({
   user: one(users, {
     fields: [comments.userId],
     references: [users.id],
@@ -283,4 +286,43 @@ export const commentsRelations = relations(comments, ({ one }) => ({
     fields: [comments.videoId],
     references: [videos.id],
   }),
+  reactions: many(commentReactions),
 }));
+
+export const commentReactions = pgTable(
+  "comment_reaction",
+  {
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    commentId: uuid("comment_id")
+      .notNull()
+      .references(() => comments.id, { onDelete: "cascade" }),
+    type: reactionTypeEnum("type").notNull(),
+
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+    updatedAt: timestamp("updated_at")
+      .notNull()
+      .$onUpdate(() => new Date()),
+  },
+  (commentReaction) => [
+    primaryKey({
+      name: "comment_reactions_pk",
+      columns: [commentReaction.userId, commentReaction.commentId],
+    }),
+  ]
+);
+
+export const commentReactionsRelations = relations(
+  commentReactions,
+  ({ one }) => ({
+    user: one(users, {
+      fields: [commentReactions.userId],
+      references: [users.id],
+    }),
+    comment: one(comments, {
+      fields: [commentReactions.commentId],
+      references: [comments.id],
+    }),
+  })
+);

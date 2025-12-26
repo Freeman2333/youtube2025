@@ -9,19 +9,19 @@ import { cn } from "@/lib/utils";
 import { ReactionType } from "@/db/schema";
 import { VideoWithUser } from "@/modules/videos/types";
 
-interface ReactionsProps {
+interface VideoReactionsProps {
   videoId: string;
   likesCount: VideoWithUser["likesCount"];
   dislikesCount: VideoWithUser["dislikesCount"];
   viewerReaction: VideoWithUser["viewerReaction"];
 }
 
-export const Reactions = ({
+export const VideoReactions = ({
   videoId,
   likesCount = 0,
   dislikesCount = 0,
   viewerReaction = null,
-}: ReactionsProps) => {
+}: VideoReactionsProps) => {
   const clerk = useClerk();
   const utils = trpc.useUtils();
 
@@ -29,6 +29,7 @@ export const Reactions = ({
     onMutate: async () => {
       await utils.videos.getOne.cancel({ id: videoId });
       const previous = utils.videos.getOne.getData({ id: videoId });
+
       utils.videos.getOne.setData({ id: videoId }, (old) => {
         if (!old) return old;
 

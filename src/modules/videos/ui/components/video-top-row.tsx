@@ -1,7 +1,7 @@
 import type { VideoWithUser } from "@/modules/videos/types";
 
 import { VideoOwner } from "@/modules/videos/ui/components/video-owner";
-import { Reactions } from "@/modules/videos/ui/components/reactions";
+import { VideoReactions } from "@/modules/videos/ui/components/video-reactions";
 import { VideoMenu } from "@/modules/videos/ui/components/video-menu";
 import { VideoDescription } from "@/modules/videos/ui/components/video-description";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -35,7 +35,7 @@ export const VideoTopRow = ({ data }: VideoTopRowProps) => {
           subscriberCount={subscriberCount}
         />
         <div className="flex items-center gap-4">
-          <Reactions
+          <VideoReactions
             videoId={video.id}
             likesCount={likesCount}
             dislikesCount={dislikesCount}

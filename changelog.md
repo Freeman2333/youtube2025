@@ -4,6 +4,33 @@ All notable changes to this project will be documented in this file.
 
 The format is based on Semantic Versioning (MAJOR.MINOR.PATCH).
 
+## [0.1.12] - 2025-12-26
+
+### Fixed
+
+- Resolved hydration error in AuthButton component by adding client-side mount check
+- Added loading placeholder for Clerk UserButton to prevent SSR/client mismatch
+
+## [0.1.11] - 2025-12-26
+
+### Added
+
+- Created `CommentReactions` component with thumbs up/down UI (no background styling)
+- Added like/dislike counts and viewer reaction state support
+- Implemented `commentReactionsRouter` with like/dislike mutations
+- Added comment reaction database schema with foreign key relations
+- Integrated comment reactions with infinite query optimistic updates
+- Added viewer reaction CTE to comments getMany procedure for current user reactions
+
+### Changed
+
+- Renamed `Reactions` component to `VideoReactions` for better clarity and distinction from comment reactions
+- Renamed `reactions.tsx` file to `video-reactions.tsx`
+- Updated import and usage in video-top-row component
+- Moved comment reactions procedure to `comment-reactions/server/procedure.ts`
+- Moved comment reactions component to `comment-reactions/ui/components/comment-reactions.tsx`
+- Updated imports across modules to reflect new file organization
+
 ## [0.1.10] - 2025-12-23
 
 ### Added

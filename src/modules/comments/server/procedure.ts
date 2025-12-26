@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { eq, desc, getTableColumns, and, lt, or } from "drizzle-orm";
+import { eq, desc, getTableColumns, and, lt, or, sql } from "drizzle-orm";
 
 import {
   baseProcedure,
@@ -8,7 +8,7 @@ import {
 } from "@/trpc/init";
 import { TRPCError } from "@trpc/server";
 import { db } from "@/db";
-import { comments, users } from "@/db/schema";
+import { comments, users, commentReactions, ReactionType } from "@/db/schema";
 
 export const commentsRouter = createTRPCRouter({
   create: protectedProcedure
@@ -46,21 +46,66 @@ export const commentsRouter = createTRPCRouter({
         limit: z.number().min(1).max(100).default(10),
       })
     )
-    .query(async ({ input }) => {
+    .query(async ({ input, ctx }) => {
       const { videoId, cursor, limit } = input;
+      const { clerkUserId } = ctx;
+
+      const [currentUser] = clerkUserId
+        ? await db
+            .select()
+            .from(users)
+            .where(eq(users.clerkId, clerkUserId))
+            .limit(1)
+        : [undefined];
 
       const totalCountPromise = db.$count(
         comments,
         eq(comments.videoId, videoId)
       );
 
+      const viewerReactionCte = db.$with("viewer_comment_reaction").as(
+        db
+          .select({
+            commentId: commentReactions.commentId,
+            type: commentReactions.type,
+          })
+          .from(commentReactions)
+          .where(
+            currentUser?.id
+              ? eq(commentReactions.userId, currentUser.id)
+              : sql`false`
+          )
+      );
+
       const dataPromise = db
+        .with(viewerReactionCte)
         .select({
           ...getTableColumns(comments),
           user: getTableColumns(users),
+          likesCount: db.$count(
+            commentReactions,
+            and(
+              eq(commentReactions.commentId, comments.id),
+              eq(commentReactions.type, ReactionType.LIKE)
+            )
+          ),
+          dislikesCount: db.$count(
+            commentReactions,
+            and(
+              eq(commentReactions.commentId, comments.id),
+              eq(commentReactions.type, ReactionType.DISLIKE)
+            )
+          ),
+          viewerReaction: sql<
+            string | null
+          >`coalesce(viewer_comment_reaction.type, null)`,
         })
         .from(comments)
         .innerJoin(users, eq(comments.userId, users.id))
+        .leftJoin(
+          viewerReactionCte,
+          eq(viewerReactionCte.commentId, comments.id)
+        )
         .where(
           and(
             eq(comments.videoId, videoId),

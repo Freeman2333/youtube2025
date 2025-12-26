@@ -4,6 +4,7 @@ import { createTRPCRouter, protectedProcedure } from "@/trpc/init";
 import { db } from "@/db";
 import { users, videoReactions } from "@/db/schema";
 import { and, eq } from "drizzle-orm";
+import { TRPCError } from "@trpc/server";
 
 export const videoReactionsRouter = createTRPCRouter({
   like: protectedProcedure
@@ -20,6 +21,13 @@ export const videoReactionsRouter = createTRPCRouter({
         .select()
         .from(users)
         .where(eq(users.clerkId, clerkUser.clerkId));
+
+      if (!user) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "User not found",
+        });
+      }
 
       const [currentReaction] = await db
         .select()
@@ -67,7 +75,7 @@ export const videoReactionsRouter = createTRPCRouter({
   dislike: protectedProcedure
     .input(
       z.object({
-        videoId: z.string().uuid(),
+        videoId: z.uuid(),
       })
     )
     .mutation(async ({ ctx, input }) => {
@@ -80,7 +88,10 @@ export const videoReactionsRouter = createTRPCRouter({
         .where(eq(users.clerkId, clerkUser.clerkId));
 
       if (!user) {
-        throw new Error("User not found");
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "User not found",
+        });
       }
 
       const [currentReaction] = await db
