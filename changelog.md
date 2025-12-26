@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 
 The format is based on Semantic Versioning (MAJOR.MINOR.PATCH).
 
+## [0.1.13] - 2025-12-26
+
+### Added
+
+- Added parent comment relationship to comments table for nested replies
+- Implemented cascade delete functionality for parent-child comment relationships
+- Added foreignKey constraint to ensure data integrity for comment hierarchies
+
 ## [0.1.12] - 2025-12-26
 
 ### Fixed

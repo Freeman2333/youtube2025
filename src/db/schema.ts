@@ -8,6 +8,7 @@ import {
   uniqueIndex,
   uuid,
   primaryKey,
+  foreignKey,
 } from "drizzle-orm/pg-core";
 import {
   createInsertSchema,
@@ -258,20 +259,31 @@ export const subscriptionsRelations = relations(subscriptions, ({ one }) => ({
   }),
 }));
 
-export const comments = pgTable("comment", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  content: text("content").notNull(),
-  userId: uuid("user_id")
-    .references(() => users.id, { onDelete: "cascade" })
-    .notNull(),
-  videoId: uuid("video_id")
-    .references(() => videos.id, { onDelete: "cascade" })
-    .notNull(),
-  createdAt: timestamp("created_at").notNull().defaultNow(),
-  updatedAt: timestamp("updated_at")
-    .notNull()
-    .$onUpdate(() => new Date()),
-});
+export const comments = pgTable(
+  "comment",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    content: text("content").notNull(),
+    userId: uuid("user_id")
+      .references(() => users.id, { onDelete: "cascade" })
+      .notNull(),
+    videoId: uuid("video_id")
+      .references(() => videos.id, { onDelete: "cascade" })
+      .notNull(),
+    parentId: uuid("parent_id"),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+    updatedAt: timestamp("updated_at")
+      .notNull()
+      .$onUpdate(() => new Date()),
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.parentId],
+      foreignColumns: [table.id],
+      name: "comments_parent_fk",
+    }).onDelete("cascade"),
+  ]
+);
 
 export const CommentInsertSchema = createInsertSchema(comments);
 export const CommentSelectSchema = createSelectSchema(comments);
@@ -285,6 +297,14 @@ export const commentsRelations = relations(comments, ({ one, many }) => ({
   video: one(videos, {
     fields: [comments.videoId],
     references: [videos.id],
+  }),
+  parent: one(comments, {
+    fields: [comments.parentId],
+    references: [comments.id],
+    relationName: "parent",
+  }),
+  replies: many(comments, {
+    relationName: "parent",
   }),
   reactions: many(commentReactions),
 }));
