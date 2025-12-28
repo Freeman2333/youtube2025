@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useUser, useClerk } from "@clerk/nextjs";
 import toast from "react-hot-toast";
+import { useEffect, useRef } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -21,6 +22,10 @@ import { CommentInsertSchema } from "@/db/schema";
 
 interface CommentFormProps {
   videoId: string;
+  parentId?: string;
+  variant?: "main" | "reply";
+  onCancel?: () => void;
+  onSuccess?: () => void;
 }
 
 const CommentSchema = CommentInsertSchema.omit({
@@ -30,10 +35,17 @@ const CommentSchema = CommentInsertSchema.omit({
   content: z.string().trim().min(2, "Comment is too short!"),
 });
 
-export const CommentForm = ({ videoId }: CommentFormProps) => {
+export const CommentForm = ({
+  videoId,
+  parentId,
+  variant = "main",
+  onCancel,
+  onSuccess,
+}: CommentFormProps) => {
   const clerk = useClerk();
   const { user, isSignedIn } = useUser();
   const utils = trpc.useUtils();
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const form = useForm<z.infer<typeof CommentSchema>>({
     resolver: zodResolver(CommentSchema),
@@ -42,10 +54,23 @@ export const CommentForm = ({ videoId }: CommentFormProps) => {
     },
   });
 
+  useEffect(() => {
+    if (variant === "reply" && textareaRef.current) {
+      textareaRef.current.focus();
+    }
+  }, [variant]);
+
   const createComment = trpc.comments.create.useMutation({
     onSuccess: () => {
       form.reset();
       utils.comments.getMany.invalidate({ videoId });
+
+      if (variant === "reply") {
+        utils.comments.getMany.invalidate({ parentId: parentId });
+      }
+
+      onSuccess?.();
+      onCancel?.();
     },
     onError: (error) => {
       toast.error(error.message || "Failed to add comment!");
@@ -61,6 +86,7 @@ export const CommentForm = ({ videoId }: CommentFormProps) => {
     createComment.mutate({
       videoId,
       content: values.content,
+      ...(parentId && { parentId }),
     });
   };
 
@@ -71,7 +97,7 @@ export const CommentForm = ({ videoId }: CommentFormProps) => {
           <UserAvatar
             src={user?.imageUrl}
             username={user?.username || ""}
-            size="default"
+            size={variant === "reply" ? "sm" : "default"}
           />
         </div>
         <div className="flex-1">
@@ -82,24 +108,38 @@ export const CommentForm = ({ videoId }: CommentFormProps) => {
               <FormItem>
                 <FormControl>
                   <Textarea
-                    rows={3}
+                    rows={variant === "reply" ? 2 : 3}
                     className="resize-none"
-                    placeholder="Add a comment..."
+                    disabled={createComment.isPending}
+                    placeholder={
+                      variant === "reply"
+                        ? "Add a reply..."
+                        : "Add a comment..."
+                    }
                     {...field}
+                    ref={(e) => {
+                      field.ref(e);
+                      if (e) textareaRef.current = e;
+                    }}
                   />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
-          <div className="flex justify-end mt-2">
+          <div className="flex justify-end gap-2 mt-2">
+            {variant === "reply" && onCancel && (
+              <Button type="button" variant="ghost" onClick={onCancel}>
+                Cancel
+              </Button>
+            )}
             <Button
               type="submit"
               variant="default"
               disabled={createComment.isPending || !form.formState.isValid}
               isLoading={createComment.isPending}
             >
-              Comment
+              {variant === "reply" ? "Reply" : "Comment"}
             </Button>
           </div>
         </div>

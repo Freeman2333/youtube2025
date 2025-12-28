@@ -1,10 +1,16 @@
+"use client";
+
 import Link from "next/link";
 import { useAuth } from "@clerk/nextjs";
+import { useState, useEffect } from "react";
 
 import { UserAvatar } from "@/components/user-avatar";
 import { buttonVariants } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
+
 import { SubscriptionButton } from "@/modules/subscriptions/ui/components/subscription-button";
 import { UserInfo } from "@/modules/users/ui/components/user-info";
+
 import { cn } from "@/lib/utils";
 import { useSubscription } from "@/modules/subscriptions/hooks/use-subscription";
 
@@ -27,11 +33,18 @@ export const VideoOwner = ({
   isSubscribed,
   subscriberCount,
 }: VideoOwnerProps) => {
-  const { userId: _userClerkId } = useAuth();
+  const { isLoaded, userId: _userClerkId } = useAuth();
 
-  const isVideoOwner = userClerkId === _userClerkId;
+  const [hasMounted, setHasMounted] = useState(false);
 
   const { toggleSubscription, isPending } = useSubscription(videoId);
+
+  useEffect(() => {
+    setHasMounted(true);
+  }, []);
+
+  const isVideoOwner =
+    isLoaded && hasMounted ? userClerkId === _userClerkId : false;
 
   const handleSubscribe = () => {
     toggleSubscription(userId, isSubscribed);
@@ -49,7 +62,9 @@ export const VideoOwner = ({
         </div>
       </Link>
       <div className="pl-4 flex">
-        {isVideoOwner ? (
+        {!hasMounted || !isLoaded ? (
+          <Skeleton className="h-9 w-20 rounded-full" />
+        ) : isVideoOwner ? (
           <Link
             href={`/studio/videos/${videoId}`}
             className={cn(

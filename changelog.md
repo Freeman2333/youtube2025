@@ -4,6 +4,123 @@ All notable changes to this project will be documented in this file.
 
 The format is based on Semantic Versioning (MAJOR.MINOR.PATCH).
 
+## [0.1.22] - 2025-12-27
+
+### Reverted
+
+- Reverted SQL syntax changes back to original raw SQL implementations
+- Restored use of `sql` template literals for better compatibility
+- Removed Drizzle ORM query builder methods (`count()`, `isNotNull()`)
+- Kept original SQL syntax as requested for `repliesCount` and `viewerReaction` fields
+
+## [0.1.23] - 2025-12-27
+
+### Changed
+
+- Removed client-only `isClient` gating from comment timestamp rendering
+
+## [0.1.24] - 2025-12-27
+
+### Added
+
+- Added `InfiniteScroll` to replies list to load more reply pages
+
+## [0.1.21] - 2025-12-26
+
+### Improved
+
+- Refactored comment procedures to use Drizzle ORM query builder instead of raw SQL where possible
+- Replaced `sql` template literals with proper Drizzle methods (`count()`, `isNotNull()`, etc.)
+- Enhanced code maintainability and type safety by reducing raw SQL usage
+- Improved query readability and consistency with Drizzle ORM patterns
+
+## [0.1.20] - 2025-12-27
+
+### Fixed
+
+- Fixed replies query to use proper infinite query pattern with `useSuspenseInfiniteQuery`
+- Updated comment reactions optimistic updates to work with infinite data structure for replies
+- Aligned frontend query usage with backend pagination implementation
+- Resolved hydration error by ensuring relative time is rendered only on the client-side.
+
+## [0.1.19] - 2025-12-26
+
+### Enhanced
+
+- Added optimistic updates for comment reactions on replies
+- Improved UX by showing immediate feedback when reacting to reply comments
+- Enhanced error handling to properly rollback optimistic updates for both main comments and replies
+
+## [0.1.18] - 2025-12-26
+
+### Fixed
+
+- Fixed comment reactions not updating in replies list when reacting to reply comments
+- Added parentCommentId prop to CommentReactions component for proper cache invalidation
+- Enhanced query invalidation to include both getMany and getReplies when reacting to replies
+
+## [0.1.17] - 2025-12-26
+
+### Refactored
+
+- Simplified RepliesSection component to only handle the replies list
+- Moved toggle replies button logic directly to CommentItem component
+- Changed CommentForm onReplyAdded prop to onSuccess for all variants
+- Improved component separation of concerns and reusability
+
+## [0.1.16] - 2025-12-26
+
+### Added
+
+- Added `getReplies` procedure to fetch actual comment replies instead of just count
+- Modified `getMany` procedure to only return top-level comments (no parent)
+- Added expandable replies functionality with toggle button showing reply count
+- Integrated replies rendering using recursive CommentItem components
+- Created `RepliesSection` component to encapsulate replies logic
+- Added loading spinner with Suspense for replies fetching
+
+### Changed
+
+- Hide reply button and form for comments that are already replies (prevent nested replies beyond one level)
+- Use smaller avatar size for reply comments to improve visual hierarchy
+- Refactor CommentItem to use `isReply` variable instead of repeatedly checking `comment.parentId`
+- Extracted replies logic from CommentItem into separate RepliesSection component for better code organization
+- Removed unnecessary `totalCount` from `getReplies` procedure to improve performance
+- Removed `repliesCount` from replies query since replies cannot have their own replies
+- Replaced raw SQL subquery with Drizzle CTE for `repliesCount` calculation
+- Replace template literal with `cn` utility function for dynamic classes in CommentItem
+
+### Fixed
+
+- Fixed `repliesCount` calculation using proper SQL subquery instead of conflicting table references
+- Fixed reply comments width alignment by restructuring CommentItem layout to allow RepliesSection to span full width
+- Fixed reply form width constraint by moving it outside the flex container to span full width
+- Fixed replies section automatically closing after adding a new reply by maintaining replies visibility state
+
+## [0.1.15] - 2025-12-26
+
+### Added
+
+- Added `repliesCount` field to comments query using correlated subquery
+- Display replies count in parentheses next to Reply button when replies exist
+- Automatically inferred `repliesCount` type through router output types
+
+## [0.1.14] - 2025-12-26
+
+### Added
+
+- Extended `CommentForm` component with reply variant support (main/reply)
+- Added reply functionality with parentId, onCancel callback, and auto-focus
+- Implemented Reply button in comment items next to reaction buttons
+- Added inline reply form with Cancel button and proper styling
+- Updated comment creation mutation to support parentId for nested replies
+- Added smaller avatar size and textarea rows for reply variant
+
+### Changed
+
+- Modified comment form placeholder text based on variant (comment/reply)
+- Updated button text to show "Reply" instead of "Comment" for reply variant
+
 ## [0.1.13] - 2025-12-26
 
 ### Added
