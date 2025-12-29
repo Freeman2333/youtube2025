@@ -41,7 +41,7 @@ export const VideoTopRow = ({ data }: VideoTopRowProps) => {
             dislikesCount={dislikesCount}
             viewerReaction={data.viewerReaction}
           />
-          <VideoMenu videoId={video.id} />
+          <VideoMenu videoId={video.id} variant="secondary" />
         </div>
       </div>
       <div className="mt-5">

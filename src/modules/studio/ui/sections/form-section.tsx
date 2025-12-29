@@ -415,7 +415,7 @@ export const FormSectionSuspense = ({ videoId }: { videoId: string }) => {
               name="visibility"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Category</FormLabel>
+                  <FormLabel>Visibility</FormLabel>
                   <Select
                     onValueChange={field.onChange}
                     defaultValue={field.value || ""}

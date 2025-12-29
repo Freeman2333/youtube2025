@@ -1,5 +1,5 @@
 import toast from "react-hot-toast";
-import { MoreHorizontal, Share2, PlusSquare } from "lucide-react";
+import { Share2, PlusSquare, MoreVertical } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -9,7 +9,12 @@ import {
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
 
-export const VideoMenu = ({ videoId }: { videoId: string }) => {
+interface VideoMenuProps {
+  videoId: string;
+  variant?: "ghost" | "secondary";
+}
+
+export const VideoMenu = ({ videoId, variant = "ghost" }: VideoMenuProps) => {
   const fullUrl = `${process.env.NEXT_PUBLIC_APP_BASE_URL}/videos/${videoId}`;
 
   const handleCopy = () => {
@@ -21,12 +26,12 @@ export const VideoMenu = ({ videoId }: { videoId: string }) => {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button
-          variant="secondary"
+          variant={variant}
           size="icon"
           className="rounded-full outline-none focus:outline-none focus:ring-0 focus:ring-offset-0 focus:ring-primary"
           aria-label="Open menu"
         >
-          <MoreHorizontal className="size-5" />
+          <MoreVertical className="size-5" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-48">

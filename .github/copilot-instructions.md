@@ -10,3 +10,5 @@
   6. Always use absolute imports (e.g., `@/path/to/file`) instead of relative imports (e.g., `../../file`).
 
 - Avoid using redundant fallback syntax like `context?.previous ?? undefined`. If the fallback value is the same as the original type (e.g., `undefined`), omit it.
+
+- **Database Queries**: Always prefer Drizzle ORM syntax over raw SQL. Only use `sql` template literals when absolutely critical and no Drizzle ORM alternative exists. Use Drizzle's query builder methods, operators, and functions whenever possible.
