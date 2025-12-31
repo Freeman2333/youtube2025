@@ -128,11 +128,9 @@ export const VideosSectionSuspense = () => {
                     previewUrl={video.previewUrl}
                     title={video.title}
                   />
-                  <div>
-                    <p className="line-clamp-2 max-w-[300px] text-sm">
-                      {video.title}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
+                  <div className="max-w-[300px]">
+                    <p className="line-clamp-2 text-sm">{video.title}</p>
+                    <p className="text-xs text-muted-foreground line-clamp-3">
                       {video.description || "No description"}
                     </p>
                   </div>
