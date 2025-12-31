@@ -4,27 +4,32 @@ import { Suspense } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 
 import { InfiniteScroll } from "@/components/infinite-scroll";
-import { Skeleton } from "@/components/ui/skeleton";
 
 import { DEFAULT_LIMIT } from "@/constants";
 import { trpc } from "@/trpc/client";
-import { VideoRowCard } from "@/modules/videos/ui/components/video-row-card";
-import { VideoGridCard } from "@/modules/videos/ui/components/video-grid-card";
+import {
+  VideoRowCard,
+  VideoRowCardSkeleton,
+} from "@/modules/videos/ui/components/video-row-card";
+import {
+  VideoGridCard,
+  VideoGridCardSkeleton,
+} from "@/modules/videos/ui/components/video-grid-card";
 
 const SuggestionsSectionSkeleton = () => {
   return (
     <div className="space-y-3">
-      <Skeleton className="h-6 w-32" />
-      {Array.from({ length: 8 }).map((_, index) => (
-        <div key={index} className="flex gap-3">
-          <Skeleton className="aspect-video w-40 rounded-md" />
-          <div className="flex-1 space-y-2">
-            <Skeleton className="h-4 w-full" />
-            <Skeleton className="h-3 w-2/3" />
-            <Skeleton className="h-3 w-1/2" />
-          </div>
-        </div>
-      ))}
+      <div className="lg:hidden flex flex-col gap-y-8">
+        {Array.from({ length: 8 }).map((_, index) => (
+          <VideoGridCardSkeleton key={index} />
+        ))}
+      </div>
+
+      <div className="hidden lg:block space-y-3">
+        {Array.from({ length: 8 }).map((_, index) => (
+          <VideoRowCardSkeleton key={index} variant="compact" />
+        ))}
+      </div>
     </div>
   );
 };
@@ -59,7 +64,7 @@ export const SuggestionsSectionSuspense = ({
 
   return (
     <>
-      <div className="lg:hidden flex flex-col gap-y-4">
+      <div className="lg:hidden flex flex-col gap-y-8">
         {suggestions.map((suggestion) => (
           <VideoGridCard key={suggestion.id} video={suggestion} />
         ))}

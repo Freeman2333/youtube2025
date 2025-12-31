@@ -62,6 +62,7 @@ export const VideoOwner = ({
         </div>
       </Link>
       <div className="pl-4 flex">
+        {/* TODO: discover why loading runs after skeleton */}
         {!hasMounted || !isLoaded ? (
           <Skeleton className="h-9 w-20 rounded-full" />
         ) : isVideoOwner ? (

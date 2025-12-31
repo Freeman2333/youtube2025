@@ -5,6 +5,8 @@ import { useMemo } from "react";
 import { formatDistanceToNow } from "date-fns";
 
 import { UserAvatar } from "@/components/user-avatar";
+import { Skeleton } from "@/components/ui/skeleton";
+
 import { UserInfo } from "@/modules/users/ui/components/user-info";
 import Thumbnail from "./video-thumbnail";
 import { VideoMenu } from "./video-menu";
@@ -72,6 +74,39 @@ export const VideoGridCard = ({ video, className }: VideoGridCardProps) => {
 
         <div className="flex-shrink-0 self-start">
           <VideoMenu videoId={video.id} />
+        </div>
+      </div>
+    </div>
+  );
+};
+
+interface VideoGridCardSkeletonProps {
+  className?: string;
+}
+
+export const VideoGridCardSkeleton = ({
+  className,
+}: VideoGridCardSkeletonProps) => {
+  return (
+    <div className={cn("flex flex-col space-y-3", className)}>
+      <Skeleton className="w-full aspect-video rounded-lg" />
+
+      <div className="flex gap-3">
+        <Skeleton className="h-9 w-9 rounded-full flex-shrink-0 mt-1" />
+
+        <div className="flex-1 min-w-0">
+          <div className="mb-2">
+            <Skeleton className="h-5 w-full mb-1" />
+            <Skeleton className="h-5 w-3/4" />
+          </div>
+
+          <Skeleton className="h-4 w-32 mb-1" />
+
+          <Skeleton className="h-4 w-28" />
+        </div>
+
+        <div className="flex-shrink-0 self-start">
+          <Skeleton className="h-6 w-6 rounded" />
         </div>
       </div>
     </div>
