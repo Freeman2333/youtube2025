@@ -8,6 +8,7 @@ import {
   videoReactions,
   ReactionType,
   subscriptions,
+  VideoVisibility,
 } from "@/db/schema";
 import { mux } from "@/lib/mux";
 import {
@@ -16,7 +17,7 @@ import {
   baseProcedure,
 } from "@/trpc/init";
 import { TRPCError } from "@trpc/server";
-import { and, eq, sql } from "drizzle-orm";
+import { and, eq, sql, desc, lt, or, getTableColumns } from "drizzle-orm";
 import z from "zod";
 import { UTApi } from "uploadthing/server";
 import { ensureNoExistingUploadthingFiles } from "@/utils/uploadthing-server";
@@ -24,6 +25,74 @@ import { ensureNoExistingUploadthingFiles } from "@/utils/uploadthing-server";
 import { APP_URL } from "@/constants";
 
 export const videosRouter = createTRPCRouter({
+  getMany: baseProcedure
+    .input(
+      z.object({
+        categoryId: z.uuid().nullish(),
+        cursor: z
+          .object({
+            id: z.uuid(),
+            updatedAt: z.date(),
+          })
+          .nullish(),
+        limit: z.number().min(1).max(100).default(15),
+      })
+    )
+    .query(async ({ input }) => {
+      const { categoryId, cursor, limit } = input;
+
+      const data = await db
+        .select({
+          ...getTableColumns(videos),
+          user: users,
+          viewsCount: db.$count(videoViews, eq(videoViews.videoId, videos.id)),
+          likesCount: db.$count(
+            videoReactions,
+            and(
+              eq(videoReactions.videoId, videos.id),
+              eq(videoReactions.type, ReactionType.LIKE)
+            )
+          ),
+          dislikesCount: db.$count(
+            videoReactions,
+            and(
+              eq(videoReactions.videoId, videos.id),
+              eq(videoReactions.type, ReactionType.DISLIKE)
+            )
+          ),
+        })
+        .from(videos)
+        .innerJoin(users, eq(videos.userId, users.id))
+        .where(
+          and(
+            eq(videos.visibility, VideoVisibility.PUBLIC),
+            categoryId ? eq(videos.categoryId, categoryId) : undefined,
+            cursor
+              ? or(
+                  lt(videos.updatedAt, cursor.updatedAt),
+                  and(
+                    eq(videos.updatedAt, cursor.updatedAt),
+                    lt(videos.id, cursor.id)
+                  )
+                )
+              : undefined
+          )
+        )
+        .orderBy(desc(videos.updatedAt), desc(videos.id))
+        .limit(limit + 1);
+
+      const hasMore = data.length > limit;
+      const items = hasMore ? data.slice(0, -1) : data;
+      const lastItem = items[items.length - 1];
+      const nextCursor = hasMore
+        ? { id: lastItem.id, updatedAt: lastItem.updatedAt }
+        : null;
+
+      return {
+        items,
+        nextCursor,
+      };
+    }),
   create: protectedProcedure.mutation(async ({ ctx }) => {
     const { id: userId } = ctx.user;
 

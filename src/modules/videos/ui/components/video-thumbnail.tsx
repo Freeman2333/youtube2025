@@ -39,7 +39,7 @@ export default function Thumbnail({
       />
       {/* Video duration box */}
       <div className="absolute bottom-2 right-2 rounded bg-black/80 px-1 py-0.5 text-xs font-medium text-white">
-        {duration && formatDuration(duration)}
+        {formatDuration(duration || 0)}
       </div>
     </div>
   );
