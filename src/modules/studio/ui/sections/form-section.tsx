@@ -33,6 +33,8 @@ import {
   SelectItem,
 } from "@/components/ui/select";
 
+import { APP_URL } from "@/constants";
+
 import z from "zod";
 import { useForm } from "react-hook-form";
 import {
@@ -171,7 +173,7 @@ export const FormSectionSuspense = ({ videoId }: { videoId: string }) => {
     defaultValues: video,
   });
 
-  const fullUrl = `${process.env.NEXT_PUBLIC_APP_BASE_URL}/videos/${videoId}`;
+  const fullUrl = `${APP_URL}/videos/${videoId}`;
 
   const onRefresh = async () => {
     try {

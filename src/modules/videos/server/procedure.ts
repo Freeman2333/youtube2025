@@ -21,12 +21,14 @@ import z from "zod";
 import { UTApi } from "uploadthing/server";
 import { ensureNoExistingUploadthingFiles } from "@/utils/uploadthing-server";
 
+import { APP_URL } from "@/constants";
+
 export const videosRouter = createTRPCRouter({
   create: protectedProcedure.mutation(async ({ ctx }) => {
     const { id: userId } = ctx.user;
 
     const upload = await mux.video.uploads.create({
-      cors_origin: process.env.NEXT_PUBLIC_APP_BASE_URL!,
+      cors_origin: APP_URL,
       new_asset_settings: {
         passthrough: userId,
         playback_policy: ["public"],

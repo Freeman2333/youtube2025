@@ -9,13 +9,15 @@ import {
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
 
+import { APP_URL } from "@/constants";
+
 interface VideoMenuProps {
   videoId: string;
   variant?: "ghost" | "secondary";
 }
 
 export const VideoMenu = ({ videoId, variant = "ghost" }: VideoMenuProps) => {
-  const fullUrl = `${process.env.NEXT_PUBLIC_APP_BASE_URL}/videos/${videoId}`;
+  const fullUrl = `${APP_URL}/videos/${videoId}`;
 
   const handleCopy = () => {
     navigator.clipboard.writeText(fullUrl);
