@@ -26,7 +26,7 @@ const mainItems: SidebarItem[] = [
   { label: "Home", href: "/", icon: <Home /> },
   {
     label: "Subscriptions",
-    href: "feed/subscriptions",
+    href: "/feed/subscriptions",
     icon: <Rss />,
     auth: true,
   },
