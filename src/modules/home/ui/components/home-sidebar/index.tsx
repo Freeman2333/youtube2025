@@ -30,7 +30,7 @@ const mainItems: SidebarItem[] = [
     icon: <Rss />,
     auth: true,
   },
-  { label: "Trending", href: "/trending", icon: <FlameIcon /> },
+  { label: "Trending", href: "/feed/trending", icon: <FlameIcon /> },
 ];
 
 const youItems: SidebarItem[] = [
