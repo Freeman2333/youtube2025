@@ -34,8 +34,13 @@ const mainItems: SidebarItem[] = [
 ];
 
 const youItems: SidebarItem[] = [
-  { label: "History", href: "/history", icon: <Clock />, auth: true },
-  { label: "Liked Videos", href: "/liked", icon: <Heart />, auth: true },
+  { label: "History", href: "/playlists/history", icon: <Clock />, auth: true },
+  {
+    label: "Liked Videos",
+    href: "/playlists/liked",
+    icon: <Heart />,
+    auth: true,
+  },
   { label: "All Playlists", href: "/playlists", icon: <List />, auth: true },
 ];
 
