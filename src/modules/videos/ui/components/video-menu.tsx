@@ -30,7 +30,7 @@ export const VideoMenu = ({ videoId, variant = "ghost" }: VideoMenuProps) => {
         <Button
           variant={variant}
           size="icon"
-          className="rounded-full outline-none focus:outline-none focus-visible:outline-none focus:ring-0 focus-visible:ring-0 focus:ring-offset-0 focus-visible:ring-offset-0"
+          className="rounded-full"
           aria-label="Open menu"
         >
           <MoreVertical className="size-5" />

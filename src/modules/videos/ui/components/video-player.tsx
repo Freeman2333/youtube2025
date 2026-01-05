@@ -1,6 +1,9 @@
 import MuxPlayer from "@mux/mux-player-react";
-import Thumbnail from "./video-thumbnail";
+
 import { Skeleton } from "@/components/ui/skeleton";
+
+import { PLACEHOLDER_IMAGE } from "@/constants";
+import Thumbnail from "./video-thumbnail";
 
 interface VideoPlayerProps {
   autoPlay?: boolean;
@@ -27,7 +30,7 @@ export const VideoPlayer = ({
         className="rounded-b-none w-full"
         duration={duration}
         title={title}
-        imageUrl={thumbnailUrl || "/placeholder.svg"}
+        imageUrl={thumbnailUrl || PLACEHOLDER_IMAGE}
         previewUrl={previewUrl}
       />
     );
@@ -36,7 +39,7 @@ export const VideoPlayer = ({
   return (
     <MuxPlayer
       playbackId={playbackId}
-      poster={thumbnailUrl || "/placeholder.svg"}
+      poster={thumbnailUrl || PLACEHOLDER_IMAGE}
       playerInitTime={0}
       autoPlay={autoPlay}
       thumbnailTime={0}

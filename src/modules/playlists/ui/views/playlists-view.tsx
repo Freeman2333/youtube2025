@@ -12,7 +12,7 @@ export const PlaylistsView = () => {
 
   return (
     <div className="max-w-[2400px] mx-auto p-4">
-      <div className="flex items-start justify-between">
+      <div className="flex items-start justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold">Playlists</h1>
           <p className="text-muted-foreground">Collections you have created</p>

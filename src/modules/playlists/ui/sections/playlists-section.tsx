@@ -4,21 +4,18 @@ import { Suspense } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 
 import { InfiniteScroll } from "@/components/infinite-scroll";
+import PlaylistGridCard, {
+  PlaylistGridCardSkeleton,
+} from "@/modules/playlists/ui/components/playlist-grid-card";
 import { DEFAULT_LIMIT } from "@/constants";
 import { trpc } from "@/trpc/client";
 
 const PlaylistsSectionSkeleton = () => {
   return (
-    <div className="space-y-6">
-      <div className="hidden md:block max-w-[880px] mx-auto space-y-4">
-        <div className="h-12 bg-muted rounded" />
-        <div className="h-12 bg-muted rounded" />
-      </div>
-
-      <div className="md:hidden flex flex-col gap-y-8">
-        <div className="h-32 bg-muted rounded" />
-        <div className="h-32 bg-muted rounded" />
-      </div>
+    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 3xl:grid-cols-5">
+      {Array.from({ length: 8 }).map((_, index) => (
+        <PlaylistGridCardSkeleton key={index} />
+      ))}
     </div>
   );
 };
@@ -33,9 +30,18 @@ const PlaylistsSectionSuspense = () => {
 
   return (
     <div className="space-y-6">
-      <pre className="whitespace-pre-wrap">
-        {JSON.stringify(items, null, 2)}
-      </pre>
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 3xl:grid-cols-5">
+        {items.map((playlist) => {
+          return (
+            <PlaylistGridCard
+              key={playlist.id}
+              id={playlist.id}
+              title={playlist.title}
+              videoCount={playlist.videosCount ?? 0}
+            />
+          );
+        })}
+      </div>
 
       <InfiniteScroll
         fetchNextPage={query.fetchNextPage}

@@ -33,7 +33,7 @@ import {
   SelectItem,
 } from "@/components/ui/select";
 
-import { APP_URL } from "@/constants";
+import { APP_URL, PLACEHOLDER_IMAGE } from "@/constants";
 
 import z from "zod";
 import { useForm } from "react-hook-form";
@@ -290,7 +290,7 @@ export const FormSectionSuspense = ({ videoId }: { videoId: string }) => {
               </p>
               <div className="group relative h-[84px] w-[153px] border border-dashed bg-neutral-400 p-0.5">
                 <Image
-                  src={video.thumbnailUrl || "/placeholder.svg"}
+                  src={video.thumbnailUrl || PLACEHOLDER_IMAGE}
                   alt="Thumbnail"
                   fill
                   className="object-cover"
