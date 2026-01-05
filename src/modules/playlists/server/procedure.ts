@@ -1,4 +1,5 @@
 import { z } from "zod";
+import createPlaylistSchema from "@/modules/playlists/schema";
 import { eq, and, or, lt, desc, getTableColumns } from "drizzle-orm";
 
 import { createTRPCRouter, protectedProcedure } from "@/trpc/init";
@@ -9,9 +10,61 @@ import {
   users,
   videoReactions,
   ReactionType,
+  playlists,
+  playlistVideos,
 } from "@/db/schema";
 
 export const playlistsRouter = createTRPCRouter({
+  getMany: protectedProcedure
+    .input(
+      z.object({
+        cursor: z
+          .object({
+            id: z.string().uuid(),
+            createdAt: z.date(),
+          })
+          .nullish(),
+        limit: z.number().min(1).max(100).default(15),
+      })
+    )
+    .query(async ({ input }) => {
+      const { cursor, limit } = input;
+
+      const data = await db
+        .select({
+          ...getTableColumns(playlists),
+          videosCount: db.$count(
+            playlistVideos,
+            eq(playlistVideos.playlistId, playlists.id)
+          ),
+        })
+        .from(playlists)
+        .where(
+          cursor
+            ? or(
+                lt(playlists.createdAt, cursor.createdAt),
+                and(
+                  eq(playlists.createdAt, cursor.createdAt),
+                  lt(playlists.id, cursor.id)
+                )
+              )
+            : undefined
+        )
+        .orderBy(desc(playlists.createdAt), desc(playlists.id))
+        .limit(limit + 1);
+
+      const hasMore = data.length > limit;
+      const items = hasMore ? data.slice(0, -1) : data;
+      const lastItem = items[items.length - 1];
+      const nextCursor = hasMore
+        ? { id: lastItem.id, createdAt: lastItem.createdAt }
+        : null;
+
+      return {
+        items,
+        nextCursor,
+      };
+    }),
   getHistory: protectedProcedure
     .input(
       z.object({
@@ -171,5 +224,20 @@ export const playlistsRouter = createTRPCRouter({
         items,
         nextCursor,
       };
+    }),
+  createPlaylist: protectedProcedure
+    .input(createPlaylistSchema)
+    .mutation(async ({ ctx, input }) => {
+      const { id: userId } = ctx.user;
+
+      const [playlist] = await db
+        .insert(playlists)
+        .values({
+          title: input.title,
+          userId,
+        })
+        .returning();
+
+      return playlist;
     }),
 });
