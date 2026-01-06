@@ -38,6 +38,7 @@ const PlaylistsSectionSuspense = () => {
               id={playlist.id}
               title={playlist.title}
               videoCount={playlist.videosCount ?? 0}
+              imageUrl={playlist.thumbnailUrl}
             />
           );
         })}

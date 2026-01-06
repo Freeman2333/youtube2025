@@ -13,7 +13,7 @@ interface PlaylistGridCardProps {
   id: string;
   title: string;
   videoCount?: number;
-  imageUrl?: string;
+  imageUrl: string | null;
 }
 
 const PlaylistGridCard = ({

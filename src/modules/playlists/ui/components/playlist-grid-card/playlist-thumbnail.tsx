@@ -6,7 +6,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { PLACEHOLDER_IMAGE } from "@/constants";
 
 interface PlaylistThumbnailProps {
-  imageUrl?: string;
+  imageUrl: string | null;
   videoCount?: number;
 }
 
@@ -21,7 +21,7 @@ export const PlaylistThumbnail = ({
 
       <div className="relative bg-neutral-800 aspect-video rounded-xl overflow-hidden">
         <Image
-          src={imageUrl}
+          src={imageUrl || PLACEHOLDER_IMAGE}
           alt="playlist thumbnail"
           className="size-full object-cover"
           fill
