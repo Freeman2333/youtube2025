@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import toast from "react-hot-toast";
-import { Share2, PlusSquare, MoreVertical } from "lucide-react";
+import { Share2, PlusSquare, MoreVertical, Trash2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -18,9 +18,14 @@ import { PlaylistAddModal } from "@/modules/playlists/ui/components/playlist-add
 interface VideoMenuProps {
   videoId: string;
   variant?: "ghost" | "secondary";
+  onRemove?: () => void;
 }
 
-export const VideoMenu = ({ videoId, variant = "ghost" }: VideoMenuProps) => {
+export const VideoMenu = ({
+  videoId,
+  variant = "ghost",
+  onRemove,
+}: VideoMenuProps) => {
   const fullUrl = `${APP_URL}/videos/${videoId}`;
 
   const [openPlaylistModal, setOpenPlaylistModal] = useState(false);
@@ -57,6 +62,15 @@ export const VideoMenu = ({ videoId, variant = "ghost" }: VideoMenuProps) => {
             <PlusSquare className="size-4 mr-2 text-muted-foreground" />
             <span>Add to playlist</span>
           </DropdownMenuItem>
+          {onRemove && (
+            <DropdownMenuItem
+              onClick={onRemove}
+              className="text-destructive cursor-pointer hover:bg-destructive/10 focus:bg-destructive/10 focus:text-destructive"
+            >
+              <Trash2 className="size-4 mr-2" />
+              <span>Remove</span>
+            </DropdownMenuItem>
+          )}
         </DropdownMenuContent>
       </DropdownMenu>
     </>

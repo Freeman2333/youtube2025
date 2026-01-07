@@ -30,12 +30,14 @@ const videoRowCardVariants = cva("flex rounded-lg transition-colors mb-4", {
 interface VideoRowCardProps extends VariantProps<typeof videoRowCardVariants> {
   video: SuggestionVideo;
   className?: string;
+  onRemove?: () => void;
 }
 
 export const VideoRowCard = ({
   video,
   variant,
   className,
+  onRemove,
 }: VideoRowCardProps) => {
   const compactViews = useMemo(() => {
     return Intl.NumberFormat("en", {
@@ -126,7 +128,7 @@ export const VideoRowCard = ({
         )}
       </div>
       <div className="flex-shrink-0 self-start">
-        <VideoMenu videoId={video.id} />
+        <VideoMenu videoId={video.id} onRemove={onRemove} />
       </div>
     </div>
   );

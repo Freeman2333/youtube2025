@@ -18,9 +18,14 @@ import type { SuggestionVideo } from "@/modules/suggestions/types";
 interface VideoGridCardProps {
   video: SuggestionVideo;
   className?: string;
+  onRemove: () => void;
 }
 
-export const VideoGridCard = ({ video, className }: VideoGridCardProps) => {
+export const VideoGridCard = ({
+  video,
+  className,
+  onRemove,
+}: VideoGridCardProps) => {
   const formattedDate = formatDistanceToNow(new Date(video.createdAt), {
     addSuffix: true,
   });
@@ -73,7 +78,7 @@ export const VideoGridCard = ({ video, className }: VideoGridCardProps) => {
         </div>
 
         <div className="flex-shrink-0 self-start">
-          <VideoMenu videoId={video.id} />
+          <VideoMenu videoId={video.id} onRemove={onRemove} />
         </div>
       </div>
     </div>

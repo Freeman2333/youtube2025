@@ -23,13 +23,15 @@ const PlaylistGridCard = ({
   imageUrl,
 }: PlaylistGridCardProps) => {
   return (
-    <Link href={`/playlist/${id}`} className="block group">
-      <div className="rounded-md overflow-hidden">
-        <PlaylistThumbnail imageUrl={imageUrl} videoCount={videoCount} />
-      </div>
+    <div className="group">
+      <Link href={`/playlists/${id}`}>
+        <div className="rounded-md overflow-hidden">
+          <PlaylistThumbnail imageUrl={imageUrl} videoCount={videoCount} />
+        </div>
+      </Link>
 
-      <PlaylistInfo title={title} />
-    </Link>
+      <PlaylistInfo playlistId={id} title={title} />
+    </div>
   );
 };
 
