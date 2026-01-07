@@ -40,6 +40,7 @@ export const CreatePlaylistModal = ({
       onOpenChange(false);
       toast.success("Playlist created!");
       utils.playlists.getMany.invalidate();
+      utils.playlists.getManyForVideo.invalidate();
     },
     onError: (error) => {
       toast.error(error.message || "Failed to create playlist!");
