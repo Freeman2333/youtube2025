@@ -1,8 +1,14 @@
-import { and, desc, eq, lt, or } from "drizzle-orm";
+import { and, desc, eq, getTableColumns, lt, or } from "drizzle-orm";
 import { z } from "zod";
 
 import { db } from "@/db";
-import { videos } from "@/db/schema";
+import {
+  comments,
+  ReactionType,
+  videoReactions,
+  videos,
+  videoViews,
+} from "@/db/schema";
 import { createTRPCRouter, protectedProcedure } from "@/trpc/init";
 import { TRPCError } from "@trpc/server";
 
@@ -24,7 +30,18 @@ export const studioRouter = createTRPCRouter({
       const { id: userId } = ctx.user;
 
       const data = await db
-        .select()
+        .select({
+          ...getTableColumns(videos),
+          viewsCount: db.$count(videoViews, eq(videoViews.videoId, videos.id)),
+          commentsCount: db.$count(comments, eq(comments.videoId, videos.id)),
+          likesCount: db.$count(
+            videoReactions,
+            and(
+              eq(videoReactions.videoId, videos.id),
+              eq(videoReactions.type, ReactionType.LIKE)
+            )
+          ),
+        })
         .from(videos)
         .where(
           and(

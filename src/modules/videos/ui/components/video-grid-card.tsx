@@ -18,7 +18,7 @@ import type { SuggestionVideo } from "@/modules/suggestions/types";
 interface VideoGridCardProps {
   video: SuggestionVideo;
   className?: string;
-  onRemove: () => void;
+  onRemove?: () => void;
 }
 
 export const VideoGridCard = ({

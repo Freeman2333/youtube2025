@@ -157,12 +157,14 @@ export const VideosSectionSuspense = () => {
                   : "-"}
               </TableCell>
 
-              <TableCell className="text-right">{video.views ?? 0}</TableCell>
+              <TableCell className="text-right">
+                {video.viewsCount ?? 0}
+              </TableCell>
               <TableCell className="text-right">
                 {video.commentsCount ?? 0}
               </TableCell>
               <TableCell className="pr-6 text-right">
-                {video.likes ?? 0}
+                {video.likesCount ?? 0}
               </TableCell>
             </TableRow>
           ))}
@@ -170,7 +172,6 @@ export const VideosSectionSuspense = () => {
       </Table>
 
       <InfiniteScroll
-        isManual
         hasNextPage={query.hasNextPage}
         isFetchingNextPage={query.isFetchingNextPage}
         fetchNextPage={query.fetchNextPage}
