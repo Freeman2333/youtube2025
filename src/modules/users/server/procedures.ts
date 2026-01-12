@@ -2,7 +2,7 @@ import { db } from "@/db";
 import { subscriptions, users, videoViews } from "@/db/schema";
 import { createTRPCRouter, baseProcedure } from "@/trpc/init";
 import { z } from "zod";
-import { eq, getTableColumns } from "drizzle-orm";
+import { eq, getTableColumns, isNotNull, sql } from "drizzle-orm";
 
 export const usersRouter = createTRPCRouter({
   getOne: baseProcedure
@@ -24,9 +24,7 @@ export const usersRouter = createTRPCRouter({
           .select({ creatorId: subscriptions.creatorId })
           .from(subscriptions)
           .where(
-            viewerUserId
-              ? eq(subscriptions.viewerId, viewerUserId)
-              : eq(subscriptions.viewerId, "")
+            viewerUserId ? eq(subscriptions.viewerId, viewerUserId) : sql`1 = 0`
           )
       );
 
@@ -39,7 +37,9 @@ export const usersRouter = createTRPCRouter({
             subscriptions,
             eq(subscriptions.creatorId, users.id)
           ),
-          viewerSubscriptionCreatorId: viewerSubscriptions.creatorId,
+          viewerSubscribed: isNotNull(viewerSubscriptions.creatorId).mapWith(
+            Boolean
+          ),
         })
         .from(users)
         .leftJoin(
@@ -50,4 +50,15 @@ export const usersRouter = createTRPCRouter({
 
       return user;
     }),
+  getCurrent: baseProcedure.query(async ({ ctx }) => {
+    if (!ctx.clerkUserId) return null;
+
+    const [user] = await db
+      .select({ id: users.id })
+      .from(users)
+      .where(eq(users.clerkId, ctx.clerkUserId))
+      .limit(1);
+
+    return user;
+  }),
 });

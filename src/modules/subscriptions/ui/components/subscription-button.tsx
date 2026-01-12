@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import type { ButtonHTMLAttributes } from "react";
+import { cn } from "@/lib/utils";
 
 interface SubscriptionButtonProps
   extends ButtonHTMLAttributes<HTMLButtonElement> {
@@ -10,6 +11,7 @@ interface SubscriptionButtonProps
 }
 
 export function SubscriptionButton({
+  className,
   onClick,
   disabled,
   isLoading,
@@ -20,7 +22,7 @@ export function SubscriptionButton({
     <Button
       onClick={onClick}
       variant={isSubscribed ? "secondary" : "default"}
-      className="rounded-full"
+      className={cn("rounded-full", className)}
       disabled={disabled}
       isLoading={isLoading}
       {...props}

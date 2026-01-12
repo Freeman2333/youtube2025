@@ -4,7 +4,7 @@ import { Suspense } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import { trpc } from "@/trpc/client";
 import { UserBanner } from "@/modules/users/ui/components/user-banner";
-import { UserInfo } from "@/modules/users/ui/components/user-info";
+import { UserPageInfo } from "@/modules/users/ui/components/user-page-info";
 
 const UserSectionSkeleton = () => {
   return <div className="h-40 w-full bg-muted rounded-lg" />;
@@ -27,9 +27,9 @@ export const UserSection = ({ userId }: UserSectionProps) => {
 function UserSectionSuspense({ userId }: { userId: string }) {
   const [user] = trpc.users.getOne.useSuspenseQuery({ userId });
   return (
-    <div>
+    <div className="flex flex-col space-y-6 mb-8">
       <UserBanner user={user} />
-      <UserInfo name={user.name} />
+      <UserPageInfo user={user} />
     </div>
   );
 }

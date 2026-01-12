@@ -1,7 +1,10 @@
 "use client";
 
 import { cva } from "class-variance-authority";
+import type { MouseEventHandler } from "react";
+
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+
 import { cn } from "@/lib/utils";
 
 export const avatarVariants = cva(
@@ -30,6 +33,7 @@ export const UserAvatar = ({
   email,
   size,
   className,
+  onClick,
 }: {
   src?: string;
   firstName?: string | null;
@@ -38,6 +42,7 @@ export const UserAvatar = ({
   email?: string | null;
   size?: "default" | "sm" | "lg" | "xs" | "xl";
   className?: string;
+  onClick?: MouseEventHandler<HTMLDivElement>;
 }) => {
   let initials;
 
@@ -52,7 +57,14 @@ export const UserAvatar = ({
   }
 
   return (
-    <Avatar className={cn(avatarVariants({ size }), className)}>
+    <Avatar
+      className={cn(
+        avatarVariants({ size }),
+        className,
+        onClick && "cursor-pointer"
+      )}
+      onClick={onClick}
+    >
       <AvatarImage src={src || ""} />
       <AvatarFallback className="text-sm font-medium">
         {initials}

@@ -14,6 +14,7 @@ import {
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
+import { trpc } from "@/trpc/client";
 
 import { UserAvatar } from "@/components/user-avatar";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -26,6 +27,11 @@ export const StudioSidebar = () => {
 
   const isCollapsed = state === "collapsed";
 
+  const { data: appUser, isLoading: isAppUserLoading } =
+    trpc.users.getCurrent.useQuery(undefined, {
+      enabled: isLoaded,
+    });
+
   return (
     <Sidebar collapsible="icon" className="border-r">
       <SidebarContent className="pt-20 bg-white">
@@ -36,8 +42,20 @@ export const StudioSidebar = () => {
             isCollapsed && "px-2 pb-0"
           )}
         >
-          {isLoaded ? (
-            <Link href={`users/${user?.id}`}>
+          {isLoaded && !isAppUserLoading ? (
+            appUser?.id ? (
+              <Link href={`/users/${appUser.id}`}>
+                <UserAvatar
+                  src={user?.imageUrl}
+                  firstName={user?.firstName}
+                  lastName={user?.lastName}
+                  username={user?.username}
+                  email={user?.emailAddresses?.[0]?.emailAddress}
+                  size={isCollapsed ? "xs" : "lg"}
+                  className="transition-all"
+                />
+              </Link>
+            ) : (
               <UserAvatar
                 src={user?.imageUrl}
                 firstName={user?.firstName}
@@ -47,7 +65,7 @@ export const StudioSidebar = () => {
                 size={isCollapsed ? "xs" : "lg"}
                 className="transition-all"
               />
-            </Link>
+            )
           ) : (
             <Skeleton
               className={cn(

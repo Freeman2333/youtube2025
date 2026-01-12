@@ -12,6 +12,7 @@ import { SubscriptionButton } from "@/modules/subscriptions/ui/components/subscr
 import { UserInfo } from "@/modules/users/ui/components/user-info";
 
 import { cn } from "@/lib/utils";
+import { trpc } from "@/trpc/client";
 import { useSubscription } from "@/modules/subscriptions/hooks/use-subscription";
 
 interface VideoOwnerProps {
@@ -37,7 +38,45 @@ export const VideoOwner = ({
 
   const [hasMounted, setHasMounted] = useState(false);
 
-  const { toggleSubscription, isPending } = useSubscription(videoId);
+  const utils = trpc.useUtils();
+  const subscriptionMutationOptions: Parameters<
+    typeof trpc.subscriptions.subscribe.useMutation
+  >[0] = {
+    onMutate: async () => {
+      await utils.videos.getOne.cancel({ id: videoId });
+
+      const previousVideo = utils.videos.getOne.getData({ id: videoId });
+
+      utils.videos.getOne.setData({ id: videoId }, (old) => {
+        if (!old) return old;
+
+        return {
+          ...old,
+          isSubscribed: !isSubscribed,
+          subscriberCount: isSubscribed
+            ? Math.max(0, old.subscriberCount - 1)
+            : +old.subscriberCount + 1,
+        };
+      });
+
+      return { previousVideo };
+    },
+    onError: (_err, _variables, context) => {
+      const ctx = context as
+        | { previousVideo?: ReturnType<typeof utils.videos.getOne.getData> }
+        | undefined;
+      if (ctx?.previousVideo) {
+        utils.videos.getOne.setData({ id: videoId }, ctx.previousVideo);
+      }
+    },
+    onSuccess: () => {
+      utils.videos.getOne.invalidate({ id: videoId });
+    },
+  } as const;
+
+  const { toggleSubscription, isPending } = useSubscription(
+    subscriptionMutationOptions
+  );
 
   useEffect(() => {
     setHasMounted(true);
@@ -46,9 +85,7 @@ export const VideoOwner = ({
   const isVideoOwner =
     isLoaded && hasMounted ? userClerkId === _userClerkId : false;
 
-  const handleSubscribe = () => {
-    toggleSubscription(userId, isSubscribed);
-  };
+  const handleSubscribe = () => toggleSubscription(userId, isSubscribed);
 
   return (
     <div className="flex items-start justify-between">
