@@ -25,6 +25,9 @@ export const users = pgTable(
     name: text("name").notNull(),
     imageUrl: text("image_url").notNull(),
 
+    bannerUrl: text("banner_url"),
+    bannerUrlKey: text("banner_url_key"),
+
     createdAt: timestamp("created_at").notNull().defaultNow(),
     updatedAt: timestamp("updatedAt")
       .notNull()
