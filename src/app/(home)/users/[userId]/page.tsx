@@ -11,6 +11,7 @@ const UserIdPage = async ({ params }: UserIdPageProps) => {
   const { userId } = await params;
 
   void trpc.users.getOne.prefetch({ userId });
+  void trpc.videos.getMany.prefetchInfinite({ userId });
 
   return (
     <HydrateClient>

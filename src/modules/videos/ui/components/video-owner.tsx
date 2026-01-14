@@ -90,7 +90,12 @@ export const VideoOwner = ({
   return (
     <div className="flex items-start justify-between">
       <Link href={`/users/${userId}`} className="flex items-center gap-3">
-        <UserAvatar src={userImage} username={name} size="default" />
+        <UserAvatar
+          src={userImage}
+          username={name}
+          size="default"
+          isLoaded={isLoaded}
+        />
         <div className="flex flex-col">
           <UserInfo name={name} size="lg" />
           <span className="text-xs text-muted-foreground">

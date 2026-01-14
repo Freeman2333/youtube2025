@@ -4,6 +4,10 @@ import { Button } from "@/components/ui/button";
 import { Pencil } from "lucide-react";
 import { User } from "../../types";
 
+export const UserBannerSkeleton = () => (
+  <div className="h-28 md:h-40 w-full bg-muted rounded-xl animate-pulse" />
+);
+
 interface UserBannerProps {
   bannerUrl?: string;
   user: User;
@@ -22,9 +26,6 @@ export function UserBanner({ bannerUrl, user }: UserBannerProps) {
         backgroundPosition: "center",
       }}
     >
-      {!bannerUrl && (
-        <span className="text-gray-100 rounded-md">No Banner Available</span>
-      )}
       {isOwner && (
         <Button
           size="icon"

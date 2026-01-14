@@ -5,6 +5,8 @@ import type { MouseEventHandler } from "react";
 
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
+import { Skeleton } from "@/components/ui/skeleton";
+
 import { cn } from "@/lib/utils";
 
 export const avatarVariants = cva(
@@ -25,6 +27,18 @@ export const avatarVariants = cva(
   }
 );
 
+export type UserAvatarProps = {
+  src?: string;
+  firstName?: string | null;
+  lastName?: string | null;
+  username?: string | null;
+  email?: string | null;
+  size?: "default" | "sm" | "lg" | "xs" | "xl";
+  className?: string;
+  onClick?: MouseEventHandler<HTMLDivElement>;
+  isLoaded: boolean;
+};
+
 export const UserAvatar = ({
   src,
   firstName,
@@ -34,16 +48,8 @@ export const UserAvatar = ({
   size,
   className,
   onClick,
-}: {
-  src?: string;
-  firstName?: string | null;
-  lastName?: string | null;
-  username?: string | null;
-  email?: string | null;
-  size?: "default" | "sm" | "lg" | "xs" | "xl";
-  className?: string;
-  onClick?: MouseEventHandler<HTMLDivElement>;
-}) => {
+  isLoaded,
+}: UserAvatarProps) => {
   let initials;
 
   if (firstName && lastName) {
@@ -54,6 +60,10 @@ export const UserAvatar = ({
     initials = email.slice(0, 2).toUpperCase();
   } else {
     initials = "UU";
+  }
+
+  if (!isLoaded) {
+    return <Skeleton className={cn(avatarVariants({ size }), className)} />;
   }
 
   return (

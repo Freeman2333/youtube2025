@@ -5,6 +5,7 @@ import { useMemo } from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 
 import { UserAvatar } from "@/components/user-avatar";
+import { useUser } from "@clerk/nextjs";
 import { Skeleton } from "@/components/ui/skeleton";
 
 import { UserInfo } from "@/modules/users/ui/components/user-info";
@@ -39,6 +40,7 @@ export const VideoRowCard = ({
   className,
   onRemove,
 }: VideoRowCardProps) => {
+  const { isLoaded } = useUser();
   const compactViews = useMemo(() => {
     return Intl.NumberFormat("en", {
       notation: "compact",
@@ -103,6 +105,7 @@ export const VideoRowCard = ({
                 firstName={video.user.name.split(" ")[0]}
                 lastName={video.user.name.split(" ")[1]}
                 size="sm"
+                isLoaded={isLoaded}
               />
             </Link>
           )}

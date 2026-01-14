@@ -5,6 +5,7 @@ import { useMemo } from "react";
 import { formatDistanceToNow } from "date-fns";
 
 import { UserAvatar } from "@/components/user-avatar";
+import { useUser } from "@clerk/nextjs";
 import { Skeleton } from "@/components/ui/skeleton";
 
 import { UserInfo } from "@/modules/users/ui/components/user-info";
@@ -26,6 +27,7 @@ export const VideoGridCard = ({
   className,
   onRemove,
 }: VideoGridCardProps) => {
+  const { isLoaded } = useUser();
   const formattedDate = formatDistanceToNow(new Date(video.createdAt), {
     addSuffix: true,
   });
@@ -56,6 +58,7 @@ export const VideoGridCard = ({
             lastName={video.user.name.split(" ")[1]}
             size="default"
             className="flex-shrink-0 mt-1"
+            isLoaded={isLoaded}
           />
         </Link>
 

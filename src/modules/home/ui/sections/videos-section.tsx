@@ -24,13 +24,14 @@ const VideosSectionSkeleton = () => {
 
 interface VideosSectionProps {
   categoryId?: string;
+  userId?: string;
 }
 
-export const VideosSection = ({ categoryId }: VideosSectionProps) => {
+export const VideosSection = ({ categoryId, userId }: VideosSectionProps) => {
   return (
     <Suspense fallback={<VideosSectionSkeleton />}>
       <ErrorBoundary fallback={<div>Something went wrong</div>}>
-        <VideosSectionSuspense categoryId={categoryId} />
+        <VideosSectionSuspense categoryId={categoryId} userId={userId} />
       </ErrorBoundary>
     </Suspense>
   );
@@ -38,13 +39,15 @@ export const VideosSection = ({ categoryId }: VideosSectionProps) => {
 
 interface VideosSectionSuspenseProps {
   categoryId?: string;
+  userId?: string;
 }
 
 export const VideosSectionSuspense = ({
   categoryId,
+  userId,
 }: VideosSectionSuspenseProps) => {
   const [data, query] = trpc.videos.getMany.useSuspenseInfiniteQuery(
-    { categoryId, limit: DEFAULT_LIMIT },
+    { categoryId, userId, limit: DEFAULT_LIMIT },
     { getNextPageParam: (lastPage) => lastPage.nextCursor }
   );
 

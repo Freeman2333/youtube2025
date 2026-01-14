@@ -43,7 +43,7 @@ export const CommentForm = ({
   onSuccess,
 }: CommentFormProps) => {
   const clerk = useClerk();
-  const { user, isSignedIn } = useUser();
+  const { user, isSignedIn, isLoaded } = useUser();
   const utils = trpc.useUtils();
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -98,6 +98,7 @@ export const CommentForm = ({
             src={user?.imageUrl}
             username={user?.username || ""}
             size={variant === "reply" ? "sm" : "default"}
+            isLoaded={isLoaded}
           />
         </div>
         <div className="flex-1">

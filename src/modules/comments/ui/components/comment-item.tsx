@@ -28,7 +28,7 @@ interface CommentItemProps {
 }
 
 export const CommentItem = ({ comment, videoId }: CommentItemProps) => {
-  const { user } = useUser();
+  const { user, isLoaded } = useUser();
   const utils = trpc.useUtils();
   const [isReplying, setIsReplying] = useState(false);
   const [showReplies, setShowReplies] = useState(false);
@@ -70,6 +70,7 @@ export const CommentItem = ({ comment, videoId }: CommentItemProps) => {
               src={comment.user.imageUrl}
               username={comment.user.name}
               size={isReply ? "sm" : "default"}
+              isLoaded={isLoaded}
             />
           </Link>
         </div>

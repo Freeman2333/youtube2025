@@ -2,14 +2,28 @@
 
 import { useClerk, useUser } from "@clerk/nextjs";
 import Link from "next/link";
-
 import { Button } from "@/components/ui/button";
-
 import { UserAvatar } from "@/components/user-avatar";
 import { SubscriptionButton } from "@/modules/subscriptions/ui/components/subscription-button";
 import { User } from "../../types";
 import { useSubscription } from "@/modules/subscriptions/hooks/use-subscription";
 import { trpc } from "@/trpc/client";
+import { Skeleton } from "@/components/ui/skeleton";
+
+export const UserPageInfoSkeleton = () => (
+  <div className="w-full flex flex-col items-start gap-4 md:flex-row md:items-start">
+    <div className="flex items-center md:items-start gap-4">
+      <Skeleton className="block md:hidden w-10 h-10 rounded-full" />
+      <Skeleton className="hidden md:block w-24 h-24 rounded-full" />
+      <div className="flex-1 space-y-2">
+        <Skeleton className="h-8 w-40 md:w-64" />
+        <Skeleton className="h-4 w-32" />
+        <Skeleton className="h-8 w-32 md:w-40 mt-4" />
+      </div>
+    </div>
+    <Skeleton className="w-full md:hidden h-10 mt-2" />
+  </div>
+);
 
 interface UserPageInfoProps {
   user: User;
@@ -19,7 +33,6 @@ export const UserPageInfo = ({ user }: UserPageInfoProps) => {
   const { user: currentUser, isLoaded } = useUser();
   const clerk = useClerk();
   const isOwner = currentUser?.id === user.clerkId;
-  console.log({ clerk });
 
   const utils = trpc.useUtils();
 
@@ -70,10 +83,6 @@ export const UserPageInfo = ({ user }: UserPageInfoProps) => {
     clerk.openUserProfile?.();
   };
 
-  if (!isLoaded) {
-    return null;
-  }
-
   return (
     <div className="w-full flex flex-col items-start gap-4 md:flex-row md:items-start">
       <div className="flex items-center md:items-start gap-4">
@@ -83,6 +92,7 @@ export const UserPageInfo = ({ user }: UserPageInfoProps) => {
           size="default"
           className="block md:hidden"
           onClick={handleAvatarClick}
+          isLoaded={isLoaded}
         />
         <UserAvatar
           src={user.imageUrl}
@@ -90,6 +100,7 @@ export const UserPageInfo = ({ user }: UserPageInfoProps) => {
           size="xl"
           className="hidden md:block"
           onClick={handleAvatarClick}
+          isLoaded={isLoaded}
         />
         <div className="text-left flex-1">
           <h1 className="text-2xl font-bold md:text-4xl">{user.name}</h1>
@@ -116,7 +127,6 @@ export const UserPageInfo = ({ user }: UserPageInfoProps) => {
           </div>
         </div>
       </div>
-
       {/* Mobile-only action */}
       <div className="w-full md:hidden">
         {isOwner ? (
