@@ -1,12 +1,7 @@
-import { Button } from "@/components/ui/button";
-import type { ButtonHTMLAttributes } from "react";
+import { Button, type ButtonProps } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
-interface SubscriptionButtonProps
-  extends ButtonHTMLAttributes<HTMLButtonElement> {
-  onClick?: () => void;
-  disabled?: boolean;
-  isLoading?: boolean;
+interface SubscriptionButtonProps extends ButtonProps {
   isSubscribed?: boolean;
 }
 
@@ -23,8 +18,7 @@ export function SubscriptionButton({
       onClick={onClick}
       variant={isSubscribed ? "secondary" : "default"}
       className={cn("rounded-full", className)}
-      disabled={disabled}
-      isLoading={isLoading}
+      disabled={disabled || isLoading}
       {...props}
     >
       {isSubscribed ? "Unsubscribe" : "Subscribe"}

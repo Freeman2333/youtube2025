@@ -68,6 +68,7 @@ export const UserPageInfo = ({ user }: UserPageInfoProps) => {
     },
     onSuccess: () => {
       utils.users.getOne.invalidate({ userId: user.id });
+      utils.subscriptions.getMany.invalidate();
     },
   } as const;
 
@@ -92,7 +93,7 @@ export const UserPageInfo = ({ user }: UserPageInfoProps) => {
           size="default"
           className="block md:hidden"
           onClick={handleAvatarClick}
-          isLoaded={isLoaded}
+          isLoading={!isLoaded}
         />
         <UserAvatar
           src={user.imageUrl}
@@ -100,7 +101,7 @@ export const UserPageInfo = ({ user }: UserPageInfoProps) => {
           size="xl"
           className="hidden md:block"
           onClick={handleAvatarClick}
-          isLoaded={isLoaded}
+          isLoading={!isLoaded}
         />
         <div className="text-left flex-1">
           <h1 className="text-2xl font-bold md:text-4xl">{user.name}</h1>

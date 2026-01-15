@@ -71,6 +71,7 @@ export const VideoOwner = ({
     },
     onSuccess: () => {
       utils.videos.getOne.invalidate({ id: videoId });
+      utils.subscriptions.getMany.invalidate();
     },
   } as const;
 
@@ -94,7 +95,7 @@ export const VideoOwner = ({
           src={userImage}
           username={name}
           size="default"
-          isLoaded={isLoaded}
+          isLoading={!isLoaded}
         />
         <div className="flex flex-col">
           <UserInfo name={name} size="lg" />
