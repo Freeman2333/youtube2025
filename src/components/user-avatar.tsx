@@ -36,7 +36,7 @@ export type UserAvatarProps = {
   size?: "default" | "sm" | "lg" | "xs" | "xl";
   className?: string;
   onClick?: MouseEventHandler<HTMLDivElement>;
-  isLoaded: boolean;
+  isLoading?: boolean;
 };
 
 export const UserAvatar = ({
@@ -48,7 +48,7 @@ export const UserAvatar = ({
   size,
   className,
   onClick,
-  isLoaded,
+  isLoading,
 }: UserAvatarProps) => {
   let initials;
 
@@ -62,7 +62,7 @@ export const UserAvatar = ({
     initials = "UU";
   }
 
-  if (!isLoaded) {
+  if (isLoading) {
     return <Skeleton className={cn(avatarVariants({ size }), className)} />;
   }
 

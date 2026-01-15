@@ -105,7 +105,7 @@ export const VideoRowCard = ({
                 firstName={video.user.name.split(" ")[0]}
                 lastName={video.user.name.split(" ")[1]}
                 size="sm"
-                isLoaded={isLoaded}
+                isLoading={!isLoaded}
               />
             </Link>
           )}

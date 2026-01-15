@@ -53,7 +53,7 @@ export const StudioSidebar = () => {
                   email={user?.emailAddresses?.[0]?.emailAddress}
                   size={isCollapsed ? "xs" : "lg"}
                   className="transition-all"
-                  isLoaded={isLoaded}
+                  isLoading={!isLoaded}
                 />
               </Link>
             ) : (
@@ -65,7 +65,7 @@ export const StudioSidebar = () => {
                 email={user?.emailAddresses?.[0]?.emailAddress}
                 size={isCollapsed ? "xs" : "lg"}
                 className="transition-all"
-                isLoaded={isLoaded}
+                isLoading={!isLoaded}
               />
             )
           ) : (

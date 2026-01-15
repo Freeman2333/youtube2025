@@ -58,7 +58,7 @@ export const VideoGridCard = ({
             lastName={video.user.name.split(" ")[1]}
             size="default"
             className="flex-shrink-0 mt-1"
-            isLoaded={isLoaded}
+            isLoading={!isLoaded}
           />
         </Link>
 

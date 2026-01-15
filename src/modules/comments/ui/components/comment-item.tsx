@@ -70,7 +70,7 @@ export const CommentItem = ({ comment, videoId }: CommentItemProps) => {
               src={comment.user.imageUrl}
               username={comment.user.name}
               size={isReply ? "sm" : "default"}
-              isLoaded={isLoaded}
+              isLoading={!isLoaded}
             />
           </Link>
         </div>

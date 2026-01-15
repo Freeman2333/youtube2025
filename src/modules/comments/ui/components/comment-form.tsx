@@ -98,7 +98,7 @@ export const CommentForm = ({
             src={user?.imageUrl}
             username={user?.username || ""}
             size={variant === "reply" ? "sm" : "default"}
-            isLoaded={isLoaded}
+            isLoading={!isLoaded}
           />
         </div>
         <div className="flex-1">
