@@ -24,7 +24,7 @@ const PlaylistGridCard = ({
 }: PlaylistGridCardProps) => {
   return (
     <div className="group">
-      <Link href={`/playlists/${id}`}>
+      <Link href={`/playlists/${id}`} prefetch>
         <div className="rounded-md overflow-hidden">
           <PlaylistThumbnail imageUrl={imageUrl} videoCount={videoCount} />
         </div>

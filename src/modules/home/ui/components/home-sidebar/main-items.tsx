@@ -41,7 +41,11 @@ export const MainItems = () => {
                 }
               }}
             >
-              <Link href={item.href} className="flex items-center gap-2">
+              <Link
+                href={item.href}
+                className="flex items-center gap-2"
+                prefetch
+              >
                 {item.icon}
                 <span>{item.label}</span>
               </Link>

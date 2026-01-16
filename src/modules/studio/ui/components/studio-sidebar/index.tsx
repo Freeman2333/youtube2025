@@ -44,7 +44,7 @@ export const StudioSidebar = () => {
         >
           {isLoaded && !isAppUserLoading ? (
             appUser?.id ? (
-              <Link href={`/users/${appUser.id}`}>
+              <Link href={`/users/${appUser.id}`} prefetch>
                 <UserAvatar
                   src={user?.imageUrl}
                   firstName={user?.firstName}
@@ -102,7 +102,11 @@ export const StudioSidebar = () => {
                 asChild
                 isActive={pathname === "/studio"}
               >
-                <Link href="/studio" className="flex items-center gap-2">
+                <Link
+                  href="/studio"
+                  className="flex items-center gap-2"
+                  prefetch
+                >
                   <VideoIcon />
                   <span>Content</span>
                 </Link>
@@ -116,6 +120,7 @@ export const StudioSidebar = () => {
                 tooltip="AI Settings"
               >
                 <Link
+                  prefetch
                   href="/studio/ai-settings"
                   className="flex items-center gap-2"
                 >
@@ -133,7 +138,7 @@ export const StudioSidebar = () => {
           <SidebarMenu>
             <SidebarMenuItem>
               <SidebarMenuButton asChild tooltip="Exit studio">
-                <Link href="/" className="flex items-center gap-2">
+                <Link href="/" className="flex items-center gap-2" prefetch>
                   <LogOutIcon className="h-4 w-4" />
                   <span>Exit Studio</span>
                 </Link>

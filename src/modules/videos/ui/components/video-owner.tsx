@@ -90,7 +90,11 @@ export const VideoOwner = ({
 
   return (
     <div className="flex items-start justify-between">
-      <Link href={`/users/${userId}`} className="flex items-center gap-3">
+      <Link
+        href={`/users/${userId}`}
+        className="flex items-center gap-3"
+        prefetch
+      >
         <UserAvatar
           src={userImage}
           username={name}
@@ -110,6 +114,7 @@ export const VideoOwner = ({
           <Skeleton className="h-9 w-20 rounded-full" />
         ) : isVideoOwner ? (
           <Link
+            prefetch
             href={`/studio/videos/${videoId}`}
             className={cn(
               buttonVariants({ variant: "secondary" }),

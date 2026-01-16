@@ -113,7 +113,7 @@ export const UserPageInfo = ({ user }: UserPageInfoProps) => {
           <div className="mt-4 hidden md:block">
             {isOwner ? (
               <Button className="rounded-full py-3 md:py-2 px-6 text-base md:text-sm">
-                <Link href="/studio">
+                <Link href="/studio" prefetch>
                   <span>Go to Studio</span>
                 </Link>
               </Button>
@@ -132,7 +132,7 @@ export const UserPageInfo = ({ user }: UserPageInfoProps) => {
       <div className="w-full md:hidden">
         {isOwner ? (
           <Button className="w-full rounded-full py-3 px-6 text-base">
-            <Link href="/studio">
+            <Link href="/studio" prefetch>
               <span>Go to Studio</span>
             </Link>
           </Button>

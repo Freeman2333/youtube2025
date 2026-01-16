@@ -65,7 +65,7 @@ export const CommentItem = ({ comment, videoId }: CommentItemProps) => {
     >
       <div className="flex gap-3">
         <div className="flex-shrink-0">
-          <Link href={`/users/${comment.user.clerkId}`}>
+          <Link href={`/users/${comment.user.clerkId}`} prefetch>
             <UserAvatar
               src={comment.user.imageUrl}
               username={comment.user.name}
@@ -77,6 +77,7 @@ export const CommentItem = ({ comment, videoId }: CommentItemProps) => {
         <div className="flex-1">
           <div className="flex items-center gap-2 mb-1">
             <Link
+              prefetch
               href={`/users/${comment.user.id}`}
               className="font-medium text-sm"
             >

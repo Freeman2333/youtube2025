@@ -40,7 +40,7 @@ export const VideoGridCard = ({
 
   return (
     <div className={cn("flex flex-col space-y-3", className)}>
-      <Link href={`/videos/${video.id}`}>
+      <Link href={`/videos/${video.id}`} prefetch>
         <Thumbnail
           duration={video.duration}
           imageUrl={video.thumbnailUrl}
@@ -51,7 +51,7 @@ export const VideoGridCard = ({
       </Link>
 
       <div className="flex gap-3">
-        <Link href={`/users/${video.user.id}`}>
+        <Link href={`/users/${video.user.id}`} prefetch>
           <UserAvatar
             src={video.user.imageUrl}
             firstName={video.user.name.split(" ")[0]}
@@ -63,13 +63,13 @@ export const VideoGridCard = ({
         </Link>
 
         <div className="flex-1 min-w-0">
-          <Link href={`/videos/${video.id}`}>
+          <Link href={`/videos/${video.id}`} prefetch>
             <h3 className="font-medium line-clamp-2 text-gray-900">
               {video.title}
             </h3>
           </Link>
 
-          <Link href={`/users/${video.user.id}`}>
+          <Link href={`/users/${video.user.id}`} prefetch>
             <UserInfo name={video.user.name} />
           </Link>
 

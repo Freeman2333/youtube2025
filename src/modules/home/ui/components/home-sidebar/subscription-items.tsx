@@ -61,6 +61,7 @@ const SubscriptionItemsSuspense = () => {
               <Link
                 href={`/users/${user.id}`}
                 className="flex items-center gap-2"
+                prefetch
               >
                 <UserAvatar
                   src={user.imageUrl}
@@ -74,7 +75,11 @@ const SubscriptionItemsSuspense = () => {
         ))}
         <SidebarMenuItem>
           <SidebarMenuButton asChild isActive={pathname === "/subscriptions"}>
-            <Link href="/subscriptions" className="flex items-center gap-2">
+            <Link
+              href="/subscriptions"
+              className="flex items-center gap-2"
+              prefetch
+            >
               <List className="h-5 w-5" />
               <span>All subscriptions</span>
             </Link>

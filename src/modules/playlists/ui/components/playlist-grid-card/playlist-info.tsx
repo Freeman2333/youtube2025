@@ -42,7 +42,7 @@ export const PlaylistInfo = ({ playlistId, title }: PlaylistInfoProps) => {
 
   return (
     <div className="mt-3 flex items-start justify-between">
-      <Link href={`/playlists/${playlistId}`}>
+      <Link href={`/playlists/${playlistId}`} prefetch>
         <h3 className="text-sm font-medium">{title}</h3>
         <p className="text-sm text-muted-foreground hover:text-foreground transition-colors cursor-pointer">
           View full playlist

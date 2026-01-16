@@ -63,6 +63,7 @@ export const VideoRowCard = ({
           "w-[168px]": isCompact,
           "w-[38%]": !isCompact,
         })}
+        prefetch
       >
         <Thumbnail
           duration={video.duration}
@@ -73,7 +74,7 @@ export const VideoRowCard = ({
         />
       </Link>
       <div className="flex-1 min-w-0">
-        <Link href={`/videos/${video.id}`}>
+        <Link href={`/videos/${video.id}`} prefetch>
           <h3
             className={cn("font-medium line-clamp-2 text-gray-900 mb-1", {
               "text-sm": isCompact,
@@ -84,7 +85,7 @@ export const VideoRowCard = ({
           </h3>
         </Link>
 
-        <Link href={`/videos/${video.id}`}>
+        <Link href={`/videos/${video.id}`} prefetch>
           <div className="text-muted-foreground mb-1 text-xs">
             <span>{compactViews} views</span>
             <span className="mx-1">•</span>
@@ -99,7 +100,7 @@ export const VideoRowCard = ({
           })}
         >
           {!isCompact && (
-            <Link href={`/users/${video.user.id}`}>
+            <Link href={`/users/${video.user.id}`} prefetch>
               <UserAvatar
                 src={video.user.imageUrl}
                 firstName={video.user.name.split(" ")[0]}
@@ -109,7 +110,7 @@ export const VideoRowCard = ({
               />
             </Link>
           )}
-          <Link href={`/users/${video.user.id}`}>
+          <Link href={`/users/${video.user.id}`} prefetch>
             <UserInfo
               name={video.user.name}
               size="sm"
