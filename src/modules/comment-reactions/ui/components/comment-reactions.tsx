@@ -10,14 +10,15 @@ import { cn } from "@/lib/utils";
 import { ReactionType } from "@/db/schema";
 import { DEFAULT_LIMIT } from "@/constants";
 import { handleCommentReactionOptimisticUpdate } from "@/modules/comment-reactions/lib/optimistic-updates";
+import type { Comment } from "@/modules/comments/types";
 
 interface CommentReactionsProps {
   commentId: string;
   videoId: string;
   likesCount?: number;
   dislikesCount?: number;
-  viewerReaction?: ReactionType | null;
-  parentCommentId?: string;
+  viewerReaction: Comment["viewerReaction"];
+  parentCommentId: string | null;
 }
 
 export const CommentReactions = ({

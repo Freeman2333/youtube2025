@@ -6,7 +6,7 @@ import { trpc } from "@/trpc/client";
 type CommentReactionUpdate = {
   commentId: string;
   videoId: string;
-  parentCommentId?: string;
+  parentCommentId: string | null;
   newReaction: ReactionType;
 };
 

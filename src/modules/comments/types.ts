@@ -3,4 +3,4 @@ import type { AppRouter } from "@/trpc/routers/_app";
 
 export type CommentsOutput =
   inferRouterOutputs<AppRouter>["comments"]["getMany"];
-export type Comment = CommentsOutput[0];
+export type Comment = CommentsOutput["items"][number];
